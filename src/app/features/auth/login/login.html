@@ -1,0 +1,39 @@
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+  <div class="card shadow-sm" style="width: 100%; max-width: 400px">
+    <div class="card-body p-4">
+      <h1 class="h4 mb-4 text-center">Iniciar sesión</h1>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo electrónico</label>
+          <input
+            id="email"
+            type="email"
+            class="form-control"
+            formControlName="email"
+            [class.is-invalid]="form.controls.email.invalid && form.controls.email.touched"
+          />
+          <div class="invalid-feedback">Ingresá un correo válido.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            class="form-control"
+            formControlName="password"
+            [class.is-invalid]="form.controls.password.invalid && form.controls.password.touched"
+          />
+          <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
+          {{ loading ? 'Ingresando...' : 'Ingresar' }}
+        </button>
+      </form>
+
+      <p class="text-center mt-3 mb-0">¿No tenés cuenta? <a routerLink="/register">Registrate</a></p>
+    </div>
+  </div>
+</div>
