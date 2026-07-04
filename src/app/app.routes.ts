@@ -10,5 +10,12 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
   },
+  {
+    path: 'usuarios',
+    loadComponent: () =>
+      import('./features/usuarios/usuario-list/usuario-list').then(
+        (m) => m.UsuarioListComponent
+      ),
+  },
   { path: '**', redirectTo: 'login' },
 ];
