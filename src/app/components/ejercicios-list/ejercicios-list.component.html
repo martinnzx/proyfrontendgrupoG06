@@ -1,0 +1,153 @@
+<div class="container-fluid py-4">
+
+  <!-- Encabezado de la pagina -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-1">🏋️ Gestión de Ejercicios</h2>
+      <p class="text-secondary mb-0">Catálogo de ejercicios con videos integrados</p>
+    </div>
+    <button class="btn btn-primary fw-bold px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEjercicio" (click)="abrirModalNuevo()">
+      + Nuevo Ejercicio
+    </button>
+  </div>
+
+  <!-- Mensajes de alerta -->
+  @if (mensajeExito) {
+    <div class="alert alert-success alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ✅ {{ mensajeExito }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+  @if (mensajeError) {
+    <div class="alert alert-danger alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ❌ {{ mensajeError }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+
+  <!-- Spinner -->
+  @if (cargando) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-secondary mt-2">Cargando catálogo...</p>
+    </div>
+  }
+
+  <!-- Cards de Bootstrap -->
+  @if (!cargando) {
+    <div class="row g-4">
+      
+      @for (ejercicio of ejercicios; track ejercicio.id) {
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+          <div class="card h-100 border-0 shadow-sm hover-elevate">
+            
+            <!-- Video de YouTube -->
+            <div class="ratio ratio-16x9 card-img-top rounded-top overflow-hidden bg-dark">
+              <iframe [src]="sanitizarUrl(ejercicio.youtube_url)" title="YouTube video" allowfullscreen></iframe>
+            </div>
+
+            <!-- Cuerpo de la tarjeta -->
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title fw-bold mb-0 text-truncate pe-2" [title]="ejercicio.nombre">
+                  {{ ejercicio.nombre }}
+                </h5>
+                @if (ejercicio.activo) {
+                  <span class="badge bg-success">Activo</span>
+                } @else {
+                  <span class="badge bg-danger">Inactivo</span>
+                }
+              </div>
+              <p class="card-text text-secondary small flex-grow-1">
+                {{ ejercicio.descripcion }}
+              </p>
+            </div>
+
+            <!-- Botones de Accion -->
+            <div class="card-footer bg-white border-top-0 pt-0 pb-3">
+              <div class="d-flex gap-2">
+                
+                <button class="btn btn-sm btn-outline-primary flex-grow-1" data-bs-toggle="modal" data-bs-target="#modalEjercicio" (click)="abrirModalEditar(ejercicio)">
+                  ✏️ Editar
+                </button>
+                
+                <button class="btn btn-sm flex-grow-1" [class.btn-outline-warning]="ejercicio.activo" [class.btn-outline-success]="!ejercicio.activo" (click)="cambiarEstado(ejercicio)">
+                  {{ ejercicio.activo ? '🔒' : '🔓' }}
+                </button>
+                
+                <button class="btn btn-sm btn-outline-danger px-3" (click)="eliminarEjercicio(ejercicio.id)" title="Eliminar">
+                  🗑️
+                </button>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      }
+
+      <!-- Si no hay resultados -->
+      @if (ejercicios.length === 0) {
+        <div class="col-12 text-center py-5">
+          <div class="fs-1 mb-3">📭</div>
+          <h4 class="text-secondary fw-bold">Catálogo vacío</h4>
+          <p class="text-secondary">Aún no cargaste ningún ejercicio en el sistema.</p>
+        </div>
+      }
+
+    </div>
+  }
+</div>
+
+
+<!-- ===== MODAL ===== -->
+<div class="modal fade" id="modalEjercicio" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+
+      <div class="modal-header bg-light border-bottom-0">
+        <h5 class="modal-title fw-bold">
+          {{ modoEdicion ? '✏️ Editar Ejercicio' : '✨ Nuevo Ejercicio' }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body pt-2">
+        <form [formGroup]="ejercicioForm">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary small">NOMBRE DEL EJERCICIO</label>
+            <input type="text" class="form-control form-control-lg fs-6" formControlName="nombre" placeholder="Ej: Press de Banca" [class.is-invalid]="ejercicioForm.get('nombre')?.invalid && ejercicioForm.get('nombre')?.touched" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary small">URL DE YOUTUBE</label>
+            <input type="text" class="form-control form-control-lg fs-6" formControlName="youtube_url" placeholder="https://www.youtube.com/watch?v=..." [class.is-invalid]="ejercicioForm.get('youtube_url')?.invalid && ejercicioForm.get('youtube_url')?.touched" />
+            <div class="form-text">Pegá el link completo del video de YouTube.</div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold text-secondary small">DESCRIPCIÓN Y TIPS</label>
+            <textarea class="form-control" formControlName="descripcion" rows="3" placeholder="Explicación breve de cómo hacerlo correctamente..." [class.is-invalid]="ejercicioForm.get('descripcion')?.invalid && ejercicioForm.get('descripcion')?.touched"></textarea>
+          </div>
+
+          @if (modoEdicion) {
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="switchActivo" formControlName="activo">
+              <label class="form-check-label" for="switchActivo">Ejercicio Activo</label>
+            </div>
+          }
+
+        </form>
+      </div>
+
+      <div class="modal-footer border-top-0 pb-4 pe-4">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary fw-bold px-4" [disabled]="ejercicioForm.invalid" data-bs-dismiss="modal" (click)="guardarEjercicio()">
+          {{ modoEdicion ? 'Actualizar' : 'Crear Ejercicio' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
