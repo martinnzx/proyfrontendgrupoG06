@@ -58,7 +58,8 @@ export class LoginComponent {
           this.loginService.saveSession(
             response.token,
             response.usuario.email,
-            response.usuario.id
+            response.usuario.id,
+            response.usuario.nombre
           );
           this.router.navigate(['/usuarios']);
           // window.location.href = '/usuarios';
