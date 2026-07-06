@@ -24,15 +24,20 @@ export class LoginService {
     return this._http.post(this.hostBase + 'login', body, httpOptions);
   }
 
-  public saveSession(token: string, email: string, id: number, nombre: string): void {
+  public saveSession(token: string, email: string, id: number, nombre: string, rol: string): void {
     sessionStorage.setItem('token', token);
     sessionStorage.setItem('email', email);
     sessionStorage.setItem('id', String(id));
     sessionStorage.setItem('nombre', nombre);
+    sessionStorage.setItem('rol', rol);
   }
 
   public getToken(): string | null {
     return sessionStorage.getItem('token');
+  }
+
+  public getRol(): string | null {
+    return sessionStorage.getItem('rol');
   }
   
   public getEmail(): string | null {
@@ -49,6 +54,7 @@ export class LoginService {
     sessionStorage.removeItem('email');
     sessionStorage.removeItem('id');
     sessionStorage.removeItem('nombre');
+    sessionStorage.removeItem('rol');
   }
 
   public isLoggedIn(): boolean {

@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
+  
   // Ruta raiz
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   
@@ -18,11 +20,19 @@ export const routes: Routes = [
       import('./components/login/login.component').then((m) => m.LoginComponent),
   },
 
-    // Ruta register
+  // Ruta register
   {
     path: 'register',
     loadComponent: () =>
       import('./components/register/register.component').then((m) => m.RegisterComponent),
+  },
+
+  // Ruta usuarios (protegida - solo admin)
+  {
+    path: 'usuarios',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/usuarios/usuarios-list/usuarios-list.component').then((m) => m.UsuariosListComponent),
   },
 
   // Ruta desconocida

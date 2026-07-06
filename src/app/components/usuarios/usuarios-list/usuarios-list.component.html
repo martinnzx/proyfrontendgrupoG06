@@ -1,0 +1,193 @@
+<div class="container-fluid py-4">
+
+  <!-- Encabezado de la pagina -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-1">👥 Gestión de Usuarios</h2>
+      <p class="text-secondary mb-0">Administrá los usuarios del sistema</p>
+    </div>
+    <span class="badge bg-primary fs-6 px-3 py-2">
+      {{ usuarios.length }} usuarios
+    </span>
+  </div>
+
+  <!-- Mensajes de exito o error -->
+  @if (mensajeExito) {
+    <div class="alert alert-success alert-dismissible d-flex align-items-center" role="alert">
+      ✅ {{ mensajeExito }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+  @if (mensajeError) {
+    <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert">
+      ❌ {{ mensajeError }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+
+  <!-- Spinner de carga -->
+  @if (cargando) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="text-secondary mt-2">Cargando usuarios...</p>
+    </div>
+  }
+
+  <!-- Tabla de usuarios -->
+  @if (!cargando) {
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+
+            <thead class="table-dark">
+              <tr>
+                <th class="px-4">ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>DNI</th>
+                <th>Email</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center px-4">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (usuario of usuarios; track usuario.id) {
+                <tr>
+                  <td class="px-4 text-secondary">{{ usuario.id }}</td>
+                  <td class="fw-semibold">{{ usuario.nombre }}</td>
+                  <td>{{ usuario.apellido }}</td>
+                  <td class="text-secondary">{{ usuario.dni }}</td>
+                  <td>{{ usuario.email }}</td>
+                  
+                  <!-- Estado de usuario -->
+                  <td class="text-center">
+                    @if (usuario.estado) {
+                      <span class="badge bg-success px-3">Activo</span>
+                    } @else {
+                      <span class="badge bg-danger px-3">Inactivo</span>
+                    }
+                  </td>
+
+                  <!-- Botones de accion -->
+                  <td class="text-center px-4">
+                    <div class="btn-group btn-group-sm" role="group">
+                      
+                      <!-- Boton Editar -->
+                      <button
+                        class="btn btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalEditarUsuario"
+                        (click)="abrirModalEditar(usuario)"
+                        title="Editar usuario"
+                      >
+                        ✏️
+                      </button>
+
+                      <!-- Boton Activar/Inactivar -->
+                      <button
+                        class="btn"
+                        [class.btn-outline-warning]="usuario.estado"
+                        [class.btn-outline-success]="!usuario.estado"
+                        (click)="cambiarEstado(usuario)"
+                        [title]="usuario.estado ? 'Inactivar usuario' : 'Activar usuario'"
+                      >
+                        {{ usuario.estado ? '🔒' : '🔓' }}
+                      </button>
+
+                      <!-- Boton Eliminar -->
+                      <button
+                        class="btn btn-outline-danger"
+                        (click)="eliminarUsuario(usuario.dni)"
+                        title="Eliminar usuario"
+                      >
+                        🗑️
+                      </button>
+
+                    </div>
+                  </td>
+                </tr>
+              }
+
+              @if (usuarios.length === 0) {
+                <tr>
+                  <td colspan="7" class="text-center text-secondary py-4">
+                    No hay usuarios registrados.
+                  </td>
+                </tr>
+              }
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
+
+<!-- ===== MODAL DE EDICION ===== -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="modalEditarLabel">
+          ✏️ Editar Usuario — {{ usuarioSeleccionado?.nombre }} {{ usuarioSeleccionado?.apellido }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="editForm">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre</label>
+            <input type="text" class="form-control" formControlName="nombre"
+              [class.is-invalid]="editForm.get('nombre')?.invalid && editForm.get('nombre')?.touched" />
+            <div class="invalid-feedback">El nombre es requerido.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Apellido</label>
+            <input type="text" class="form-control" formControlName="apellido"
+              [class.is-invalid]="editForm.get('apellido')?.invalid && editForm.get('apellido')?.touched" />
+            <div class="invalid-feedback">El apellido es requerido.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <input type="email" class="form-control" formControlName="email"
+              [class.is-invalid]="editForm.get('email')?.invalid && editForm.get('email')?.touched" />
+            <div class="invalid-feedback">El email debe tener un formato válido.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nueva Contraseña <span class="text-secondary fw-normal">(dejar vacío para no cambiar)</span></label>
+            <input type="password" class="form-control" formControlName="password"
+              [class.is-invalid]="editForm.get('password')?.invalid && editForm.get('password')?.touched"
+              placeholder="Mínimo 6 caracteres" />
+            <div class="invalid-feedback">Mínimo 6 caracteres.</div>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        
+        <button type="button" class="btn btn-primary fw-bold" 
+          [disabled]="editForm.invalid"
+          data-bs-dismiss="modal"
+          (click)="guardarEdicion()">
+          Guardar cambios
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
