@@ -12,7 +12,7 @@
     <div class="collapse navbar-collapse" id="navbarGym">
       
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        @if (loginService.isLoggedIn()) {
+        @if (loginService.isLoggedIn() && loginService.getRol() === 'admin') {
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/usuarios']">Usuarios</a>
           </li>

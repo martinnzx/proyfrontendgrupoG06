@@ -59,9 +59,10 @@ export class LoginComponent {
             response.token,
             response.usuario.email,
             response.usuario.id,
-            response.usuario.nombre
+            response.usuario.nombre,
+            response.usuario.rol
           );
-          this.router.navigate(['/usuarios']);
+          this.router.navigate(['/home']);
           // window.location.href = '/usuarios';
         } else {
           this.errorMsg = response.msg;
