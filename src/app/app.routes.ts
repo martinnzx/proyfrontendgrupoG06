@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './guards/admin.guard';
+import { entrenadorGuard } from './guards/entrenador.guard';
 
 export const routes: Routes = [
   
@@ -33,6 +34,14 @@ export const routes: Routes = [
     canActivate: [adminGuard],
     loadComponent: () =>
       import('./components/usuarios/usuarios-list/usuarios-list.component').then((m) => m.UsuariosListComponent),
+  },
+
+  // Ruta ejercicios (protegida - solo entrenador)
+  {
+    path: 'ejercicios',
+    canActivate: [entrenadorGuard],
+    loadComponent: () =>
+      import('./components/ejercicios-list/ejercicios-list.component').then((m) => m.EjerciciosListComponent),
   },
 
   // Ruta desconocida
