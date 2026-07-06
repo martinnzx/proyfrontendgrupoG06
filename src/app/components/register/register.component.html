@@ -1,0 +1,126 @@
+<div class="min-vh-100 bg-light d-flex align-items-center justify-content-center py-5">
+  <div class="card shadow border-0" style="width: 520px;">
+
+    <div class="card-body p-5">
+
+      <div class="text-center mb-4">
+        <h2 class="fw-bold text-dark mb-1">🏋️ GymHub</h2>
+        <p class="text-secondary">Creá tu cuenta para comenzar</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+        <!-- Nombre y Apellido -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="nombre" class="form-label fw-semibold text-dark">Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              class="form-control bg-light"
+              formControlName="nombre"
+              [class.is-invalid]="isNombreInvalid"
+              placeholder="Agustin"
+            />
+            <div class="invalid-feedback">El nombre es requerido.</div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label for="apellido" class="form-label fw-semibold text-dark">Apellido</label>
+            <input
+              type="text"
+              id="apellido"
+              class="form-control bg-light"
+              formControlName="apellido"
+              [class.is-invalid]="isApellidoInvalid"
+              placeholder="Quiroga"
+            />
+            <div class="invalid-feedback">El apellido es requerido.</div>
+          </div>
+        </div>
+
+        <!-- DNI -->
+        <div class="mb-3">
+          <label for="dni" class="form-label fw-semibold text-dark">DNI</label>
+          <input
+            type="text"
+            id="dni"
+            class="form-control bg-light"
+            formControlName="dni"
+            [class.is-invalid]="isDniInvalid"
+            placeholder="12345678"
+          />
+          <div class="invalid-feedback">
+            @if (dni?.errors?.['required']) { El DNI es requerido. }
+            @if (dni?.errors?.['pattern']) { El DNI debe contener solo números y tener 7 u 8 dígitos. }
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label fw-semibold text-dark">Email</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control bg-light"
+            formControlName="email"
+            [class.is-invalid]="isEmailInvalid"
+            placeholder="tu@email.com"
+          />
+          <div class="invalid-feedback">
+            @if (emailCtrl?.errors?.['required']) { El email es requerido. }
+            @if (emailCtrl?.errors?.['email']) { El formato del email no es válido. }
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="mb-3">
+          <label for="password" class="form-label fw-semibold text-dark">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control bg-light"
+            formControlName="password"
+            [class.is-invalid]="isPasswordInvalid"
+            placeholder="Mínimo 6 caracteres"
+          />
+          <div class="invalid-feedback">
+            @if (password?.errors?.['required']) { La contraseña es requerida. }
+            @if (password?.errors?.['minlength']) { La contraseña debe tener al menos 6 caracteres. }
+          </div>
+        </div>
+
+        <!-- Mensajes de error o exito del servidor -->
+        @if (errorMsg) {
+          <div class="alert alert-danger py-2 small">{{ errorMsg }}</div>
+        }
+        @if (successMsg) {
+          <div class="alert alert-success py-2 small">{{ successMsg }}</div>
+        }
+
+        <!-- Boton de envio -->
+        <button
+          type="submit"
+          class="btn btn-primary w-100 mt-2 fw-bold"
+          [disabled]="registerForm.invalid || loading"
+        >
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Registrando...
+          } @else {
+            Crear cuenta
+          }
+        </button>
+
+        <!-- Link para ir al login si ya tiene cuenta -->
+        <div class="text-center mt-3">
+          <small class="text-secondary">
+            ¿Ya tenés una cuenta? 
+            <a [routerLink]="['/login']" class="text-primary fw-semibold text-decoration-none">Iniciá sesión</a>
+          </small>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

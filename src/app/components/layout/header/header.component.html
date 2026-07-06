@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
   <div class="container">
     
-    <a class="navbar-brand fw-bold" [routerLink]="['/usuarios']">
+    <a class="navbar-brand fw-bold" [routerLink]="['/home']">
       🏋️ GymHub
     </a>
     
@@ -23,16 +23,17 @@
         
         @if (loginService.isLoggedIn()) {
           <span class="navbar-text me-3 text-light">
-            Hola, {{ loginService.getEmail() }}
+            Hola, {{ loginService.getNombre() + "!" }}
           </span>
           <button class="btn btn-outline-danger btn-sm px-4 fw-bold" (click)="logout()">
             Cerrar Sesión
           </button>
-        } @else {
+        } 
+        <!-- @else {
           <button class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" (click)="goToLogin()">
             Iniciar Sesión
           </button>
-        }
+        } -->
         
       </div>
 

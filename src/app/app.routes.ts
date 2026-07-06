@@ -18,6 +18,13 @@ export const routes: Routes = [
       import('./components/login/login.component').then((m) => m.LoginComponent),
   },
 
+    // Ruta register
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./components/register/register.component').then((m) => m.RegisterComponent),
+  },
+
   // Ruta desconocida
   { path: '**', redirectTo: 'home' },
 
