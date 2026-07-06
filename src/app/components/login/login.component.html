@@ -1,0 +1,64 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card shadow border-0" style="width: 420px;">
+
+    <div class="card-body p-5">
+
+      <div class="text-center mb-4">
+        <h2 class="fw-bold text-dark mb-1">🏋️ GymHub</h2>
+        <p class="text-secondary">Iniciá sesión para continuar</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+        <div class="mb-3">
+          <label for="email" class="form-label fw-semibold text-dark">Email</label>
+          
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            formControlName="email"
+            [class.is-invalid]="isEmailInvalid"
+            placeholder="tu@email.com"
+          />
+
+          <div class="invalid-feedback">
+            @if (emailControl?.errors?.['required']) { El email es requerido. }
+            @if (emailControl?.errors?.['email']) { El formato del email no es válido. }
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label fw-semibold text-dark">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            formControlName="password"
+            [class.is-invalid]="isPasswordInvalid"
+            placeholder="••••••"
+          />
+          <div class="invalid-feedback">La contraseña es requerida.</div>
+        </div>
+
+        @if (errorMsg) {
+          <div class="alert alert-danger py-2 small">{{ errorMsg }}</div>
+        }
+
+        <button
+          type="submit"
+          class="btn btn-primary w-100 mt-2"
+          [disabled]="loginForm.invalid || loading"
+        >
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Ingresando...
+          } @else {
+            Ingresar
+          }
+        </button>
+
+      </form>
+    </div>
+  </div>
+</div>
