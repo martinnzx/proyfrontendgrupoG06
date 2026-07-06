@@ -1,6 +1,28 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  // Ruta raiz
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  
+  // Ruta home
+  {
+    path: 'home',
+    loadComponent: () =>
+      import('./components/home/home.component').then((m) => m.HomeComponent),
+  },
+
+  // Ruta login
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./components/login/login.component').then((m) => m.LoginComponent),
+  },
+
+  // Ruta desconocida
+  { path: '**', redirectTo: 'home' },
+
+  /* ----------------------------------------------------
+
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
     path: 'login',
@@ -18,4 +40,7 @@ export const routes: Routes = [
       ),
   },
   { path: '**', redirectTo: 'login' },
+  
+  ---------------------------------------------------- */
+
 ];
