@@ -1,0 +1,217 @@
+<div class="container-fluid py-4">
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-1">📋 Asignación de Rutinas</h2>
+      <p class="text-secondary mb-0">Gestioná qué ejercicios tiene que hacer cada socio</p>
+    </div>
+    <button class="btn btn-primary fw-bold px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalRutina" (click)="abrirModalNuevo()">
+      + Nueva Rutina
+    </button>
+  </div>
+
+  <!-- Alertas -->
+  @if (mensajeExito) {
+    <div class="alert alert-success alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ✅ {{ mensajeExito }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+  @if (mensajeError) {
+    <div class="alert alert-danger alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ❌ {{ mensajeError }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+
+  @if (cargando) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-secondary mt-2">Cargando rutinas...</p>
+    </div>
+  }
+
+  <!-- Tabla de Rutinas -->
+  @if (!cargando) {
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            
+            <thead class="table-dark">
+              <tr>
+                <th class="px-4">Día</th>
+                <th>Turno</th>
+                <th>Socio</th>
+                <th>Ejercicio Asignado</th>
+                <th>Indicaciones</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center px-4">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (rutina of rutinas; track rutina.id) {
+                <tr>
+                  <td class="px-4 fw-bold text-primary">{{ rutina.dia_semana }}</td>
+                  <td>{{ rutina.turno }}</td>
+                  
+                  <!-- Datos del Usuario -->
+                  <td class="fw-semibold">
+                    @if (rutina.usuario; as usu) {
+                      {{ usu.nombre }} {{ usu.apellido }}
+                    }
+                  </td>
+                  
+                  <!-- Datos del Ejercicio y Link al video -->
+                  <td>
+                    @if (rutina.ejercicio; as eje) {
+                      @if (eje.youtube_url) {
+                        <a [href]="eje.youtube_url" target="_blank" class="text-decoration-none fw-semibold">
+                          ▶️ {{ eje.nombre }}
+                        </a>
+                      } @else {
+                        <span class="fw-semibold">{{ eje.nombre }}</span>
+                      }
+                    }
+                  </td>
+                  
+                  <!-- Datos de la Rutina -->
+                  <td>
+                    <div class="fw-bold text-dark">{{ rutina.nombre }}</div>
+                    <small class="text-secondary">{{ rutina.descripcion }}</small>
+                  </td>
+                  
+                  <!-- Estado -->
+                  <td class="text-center">
+                    @if (rutina.activo) {
+                      <span class="badge bg-success px-3">Activa</span>
+                    } @else {
+                      <span class="badge bg-danger px-3">Inactiva</span>
+                    }
+                  </td>
+                  
+                  <!-- Botones -->
+                  <td class="text-center px-4">
+                    <div class="btn-group btn-group-sm">
+                      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalRutina" (click)="abrirModalEditar(rutina)">✏️</button>
+                      <button class="btn" [class.btn-outline-warning]="rutina.activo" [class.btn-outline-success]="!rutina.activo" (click)="cambiarEstado(rutina)">
+                        {{ rutina.activo ? '🔒' : '🔓' }}
+                      </button>
+                      <button class="btn btn-outline-danger" (click)="eliminarRutina(rutina.id)">🗑️</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+
+              @if (rutinas.length === 0) {
+                <tr><td colspan="7" class="text-center text-secondary py-4">No hay rutinas asignadas en el sistema.</td></tr>
+              }
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- ===== MODAL PARA ASIGNAR/EDITAR RUTINA ===== -->
+<div class="modal fade" id="modalRutina" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      
+      <div class="modal-header bg-light border-bottom-0">
+        <h5 class="modal-title fw-bold text-dark">
+          {{ modoEdicion ? '✏️ Editar Rutina' : '✨ Asignar Nueva Rutina' }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      
+      <div class="modal-body pt-3">
+        <form [formGroup]="rutinaForm">
+          
+          <!-- Fila 1: Seleccion de Socio y Ejercicio -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">SOCIO ASIGNADO</label>
+              <select class="form-select form-select-lg fs-6" formControlName="usuarioId" [class.is-invalid]="rutinaForm.get('usuarioId')?.invalid && rutinaForm.get('usuarioId')?.touched">
+                <option value="">Seleccione un socio...</option>
+                
+                @for (u of usuarios; track u.id) {
+                  <option [value]="u.id">{{ u.nombre }} {{ u.apellido }} (DNI: {{ u.dni }})</option>
+                }
+              </select>
+            </div>
+            
+            <div class="col-md-6 mt-3 mt-md-0">
+              <label class="form-label fw-semibold small text-secondary">EJERCICIO A REALIZAR</label>
+              <select class="form-select form-select-lg fs-6" formControlName="ejercicioId" [class.is-invalid]="rutinaForm.get('ejercicioId')?.invalid && rutinaForm.get('ejercicioId')?.touched">
+                <option value="">Seleccione un ejercicio...</option>
+                
+                @for (e of ejercicios; track e.id) {
+                  <option [value]="e.id">{{ e.nombre }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Dia, Turno y Titulo -->
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small text-secondary">DÍA</label>
+              <select class="form-select" formControlName="dia_semana" [class.is-invalid]="rutinaForm.get('dia_semana')?.invalid && rutinaForm.get('dia_semana')?.touched">
+                <option value="">Elegir Día...</option>
+                <option value="Lunes">Lunes</option>
+                <option value="Martes">Martes</option>
+                <option value="Miércoles">Miércoles</option>
+                <option value="Jueves">Jueves</option>
+                <option value="Viernes">Viernes</option>
+                <option value="Sábado">Sábado</option>
+                <option value="Domingo">Domingo</option>
+              </select>
+            </div>
+            
+            <div class="col-md-4 mt-3 mt-md-0">
+              <label class="form-label fw-semibold small text-secondary">TURNO</label>
+              <select class="form-select" formControlName="turno" [class.is-invalid]="rutinaForm.get('turno')?.invalid && rutinaForm.get('turno')?.touched">
+                <option value="">Elegir Turno...</option>
+                <option value="Mañana">Mañana</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noche">Noche</option>
+              </select>
+            </div>
+            
+            <div class="col-md-4 mt-3 mt-md-0">
+              <label class="form-label fw-semibold small text-secondary">TÍTULO DE LA RUTINA</label>
+              <input type="text" class="form-control" formControlName="nombre" placeholder="Ej: Día de Pecho" [class.is-invalid]="rutinaForm.get('nombre')?.invalid && rutinaForm.get('nombre')?.touched">
+            </div>
+          </div>
+
+          <!-- Indicaciones -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">INDICACIONES DEL ENTRENADOR</label>
+            <textarea class="form-control" formControlName="descripcion" rows="2" placeholder="Ej: 4 series de 12 repeticiones, descanso de 1 min. ¡Mantener espalda recta!" [class.is-invalid]="rutinaForm.get('descripcion')?.invalid && rutinaForm.get('descripcion')?.touched"></textarea>
+          </div>
+
+          @if (modoEdicion) {
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="rutinaActivo" formControlName="activo">
+              <label class="form-check-label" for="rutinaActivo">Rutina Activa</label>
+            </div>
+          }
+
+        </form>
+      </div>
+      
+      <div class="modal-footer border-top-0 pb-4 pe-4">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary fw-bold px-4" [disabled]="rutinaForm.invalid" data-bs-dismiss="modal" (click)="guardarRutina()">
+          {{ modoEdicion ? 'Actualizar Rutina' : 'Asignar Rutina' }}
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>

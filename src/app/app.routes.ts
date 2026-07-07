@@ -44,6 +44,14 @@ export const routes: Routes = [
       import('./components/ejercicios-list/ejercicios-list.component').then((m) => m.EjerciciosListComponent),
   },
 
+  // Ruta rutinas (protegida - solo entrenador)
+  {
+    path: 'rutinas',
+    canActivate: [entrenadorGuard],
+    loadComponent: () =>
+      import('./components/rutinas-list/rutinas-list.component').then((m) => m.RutinasListComponent),
+  },
+
   // Ruta desconocida
   { path: '**', redirectTo: 'home' },
 
