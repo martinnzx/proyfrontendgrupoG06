@@ -1,0 +1,162 @@
+<div class="container-fluid py-4">
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-1">💳 Gestión de Suscripciones</h2>
+      <p class="text-secondary mb-0">Control de cuotas y vencimientos de socios</p>
+    </div>
+    <button class="btn btn-primary fw-bold px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalSuscripcion" (click)="abrirModalNuevo()">
+      + Nueva Suscripción
+    </button>
+  </div>
+
+  <!-- Alertas -->
+  @if (mensajeExito) {
+    <div class="alert alert-success alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ✅ {{ mensajeExito }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+  @if (mensajeError) {
+    <div class="alert alert-danger alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ❌ {{ mensajeError }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+
+  @if (cargando) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-secondary mt-2">Cargando pagos y vencimientos...</p>
+    </div>
+  }
+
+  <!-- Tabla de Suscripciones -->
+  @if (!cargando) {
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            
+            <thead class="table-dark">
+              <tr>
+                <th class="px-4">Socio</th>
+                <th>Fecha de Inicio</th>
+                <th>Vencimiento</th>
+                <th>Precio</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center px-4">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (susc of suscripciones; track susc.id) {
+                <tr>
+                  <td class="px-4 fw-bold text-dark">
+                    @if (susc.usuario; as usu) {
+                      {{ usu.nombre }} {{ usu.apellido }}
+                    }
+                  </td>
+                  
+                  <td>{{ susc.fecha_inicio }}</td>
+                  
+                  <td><span class="text-danger fw-semibold">{{ susc.fecha_fin }}</span></td>
+                  
+                  <td class="text-success fw-bold">${{ susc.precio }}</td>
+                  
+                  <td class="text-center">
+                    @if (susc.activo) {
+                      <span class="badge bg-success px-3">Al Día</span>
+                    } @else {
+                      <span class="badge bg-danger px-3">Vencida</span>
+                    }
+                  </td>
+                  
+                  <td class="text-center px-4">
+                    <div class="btn-group btn-group-sm">
+                      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalSuscripcion" (click)="abrirModalEditar(susc)">✏️</button>
+                      <button class="btn" [class.btn-outline-warning]="susc.activo" [class.btn-outline-success]="!susc.activo" (click)="cambiarEstado(susc)">
+                        {{ susc.activo ? '🔒' : '🔓' }}
+                      </button>
+                      <button class="btn btn-outline-danger" (click)="eliminarSuscripcion(susc.id)">🗑️</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+
+              @if (suscripciones.length === 0) {
+                <tr><td colspan="6" class="text-center text-secondary py-4">No hay suscripciones registradas.</td></tr>
+              }
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- ===== MODAL DE SUSCRIPCION ===== -->
+<div class="modal fade" id="modalSuscripcion" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      
+      <div class="modal-header bg-light border-bottom-0">
+        <h5 class="modal-title fw-bold text-dark">
+          {{ modoEdicion ? '✏️ Editar Suscripción' : '✨ Alta de Suscripción' }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      
+      <div class="modal-body pt-3">
+        <form [formGroup]="suscripcionForm">
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">SELECCIONAR SOCIO</label>
+            <select class="form-select form-select-lg fs-6" formControlName="usuarioId" [class.is-invalid]="suscripcionForm.get('usuarioId')?.invalid && suscripcionForm.get('usuarioId')?.touched">
+              <option value="">Buscar socio...</option>
+              @for (u of usuarios; track u.id) {
+                <option [value]="u.id">{{ u.nombre }} {{ u.apellido }} (DNI: {{ u.dni }})</option>
+              }
+            </select>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-secondary">FECHA INICIO</label>
+              
+              <input type="date" class="form-control" formControlName="fecha_inicio" [class.is-invalid]="suscripcionForm.get('fecha_inicio')?.invalid && suscripcionForm.get('fecha_inicio')?.touched">
+            </div>
+            
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-secondary">VENCIMIENTO</label>
+              <input type="date" class="form-control text-danger fw-semibold" formControlName="fecha_fin" [class.is-invalid]="suscripcionForm.get('fecha_fin')?.invalid && suscripcionForm.get('fecha_fin')?.touched">
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label fw-semibold small text-secondary">PRECIO MENSUAL ($)</label>
+            <input type="number" class="form-control form-control-lg fs-6" formControlName="precio" placeholder="Ej: 15000" [class.is-invalid]="suscripcionForm.get('precio')?.invalid && suscripcionForm.get('precio')?.touched">
+          </div>
+
+          @if (modoEdicion) {
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="suscripcionActiva" formControlName="activo">
+              <label class="form-check-label" for="suscripcionActiva">Suscripción al día</label>
+            </div>
+          }
+
+        </form>
+      </div>
+      
+      <div class="modal-footer border-top-0 pb-4 pe-4">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary fw-bold px-4" [disabled]="suscripcionForm.invalid" data-bs-dismiss="modal" (click)="guardarSuscripcion()">
+          {{ modoEdicion ? 'Actualizar' : 'Guardar Suscripción' }}
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>
