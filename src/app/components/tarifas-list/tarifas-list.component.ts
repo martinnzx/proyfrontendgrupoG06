@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { TarifaService } from '../../services/tarifa.service';
 import { SuscripcionService } from '../../services/suscripcion.service';
 import { PagoService } from '../../services/pago.service';
+import { MercadoPagoService } from '../../services/mercado-pago.service';
 import { Tarifa } from '../../models/tarifa.model';
 import { Suscripcion } from '../../models/suscripcion.model';
 
@@ -27,11 +28,13 @@ export class TarifasListComponent implements OnInit {
   
   tarifaSeleccionadaId: number | null = null;
   tarifaParaPagar: Tarifa | null = null;
+  generandoLinkMP: boolean = false;
 
   constructor(
     private tarifaService: TarifaService,
     private suscripcionService: SuscripcionService,
     private pagoService: PagoService,
+    private mpService: MercadoPagoService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ) {
@@ -163,6 +166,41 @@ export class TarifasListComponent implements OnInit {
       },
       error: (err) => {
         this.mensajeError = err.error?.msg || 'Error al registrar el pago.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  pagarConMP(tarifa: Tarifa): void {
+    this.limpiarMensajes();
+    this.generandoLinkMP = true;
+
+    const title = `Cuota ${tarifa.mes}/${tarifa.anio} - Gimnasio`;
+    const description = `Pago de cuota mensual. Suscripción #${tarifa.suscripcion?.id}`;
+    const precio = Number(tarifa.precio);
+
+    const email = 'test_user_123@testuser.com';
+
+    this.mpService.generarLinkPago(title, description, precio, email).subscribe({
+      next: (res: any) => {
+        this.generandoLinkMP = false;
+        if (res && res.init_point) {
+          // Dejamos el entorno de producción (init_point) para que se vea limpio y profesional en la defensa
+          window.open(res.init_point, '_blank');
+        } else {
+          this.mensajeError = 'MercadoPago no devolvió un link válido. Revisá el ACCESS_TOKEN en el .env';
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.generandoLinkMP = false;
+        
+        let errorMsg = err.error?.msg || 'Error al conectar con MercadoPago.';
+        if (err.error?.detalle) {
+          errorMsg += ` Detalles: ${JSON.stringify(err.error.detalle)}`;
+        }
+        
+        this.mensajeError = errorMsg;
         this.cdr.detectChanges();
       }
     });
