@@ -52,6 +52,14 @@ export const routes: Routes = [
       import('./components/rutinas-list/rutinas-list.component').then((m) => m.RutinasListComponent),
   },
 
+  // Ruta suscripciones (protegida - solo admin)
+  {
+    path: 'suscripciones',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/suscripciones-list/suscripciones-list.component').then((m) => m.SuscripcionesListComponent),
+  },
+
   // Ruta desconocida
   { path: '**', redirectTo: 'home' },
 
