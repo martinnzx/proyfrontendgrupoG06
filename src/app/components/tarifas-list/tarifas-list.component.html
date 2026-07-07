@@ -80,9 +80,17 @@
                   <td class="text-center px-4">
                     <div class="btn-group btn-group-sm">
                       @if (!tarifa.pagado && tarifa.activo) {
-                        <!-- Botón para Registrar Pago Local -->
+                        <!-- Boton para Registrar Pago Local -->
                         <button class="btn btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalPago" (click)="abrirModalPago(tarifa)" title="Registrar Pago Manual">
-                          💵 Cobrar
+                          💵 Efectivo
+                        </button>
+                        <!-- Boton para Pagar con MercadoPago -->
+                        <button class="btn btn-primary fw-bold" (click)="pagarConMP(tarifa)" [disabled]="generandoLinkMP" title="Pagar Online con MercadoPago">
+                          @if (generandoLinkMP) {
+                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                          } @else {
+                            💳 MP
+                          }
                         </button>
                       }
                       
