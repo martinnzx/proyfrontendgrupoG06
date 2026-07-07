@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './guards/admin.guard';
 import { entrenadorGuard } from './guards/entrenador.guard';
+import { socioGuard } from './guards/socio.guard';
 
 export const routes: Routes = [
   
@@ -74,6 +75,20 @@ export const routes: Routes = [
     canActivate: [adminGuard],
     loadComponent: () =>
       import('./components/pagos-list/pagos-list.component').then((m) => m.PagosListComponent),
+  },
+
+  // Rutas del socio (protegidas)
+  {
+    path: 'mis-pagos',
+    canActivate: [socioGuard],
+    loadComponent: () =>
+      import('./components/mis-pagos/mis-pagos').then((m) => m.MisPagosComponent),
+  },
+  {
+    path: 'mis-rutinas',
+    canActivate: [socioGuard],
+    loadComponent: () =>
+      import('./components/mis-rutinas/mis-rutinas').then((m) => m.MisRutinasComponent),
   },
 
   // Ruta desconocida
