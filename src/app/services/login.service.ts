@@ -73,5 +73,10 @@ export class LoginService {
   return this._http.post('http://localhost:3000/api/usuarios/', body, httpOptions);
   }
 
-  
+  // Login con Google
+  public loginConGoogle(googleToken: string): Observable<any> {
+    const body = { token: googleToken };
+    return this._http.post(this.hostBase + 'google', body);
+  }
+
 }
