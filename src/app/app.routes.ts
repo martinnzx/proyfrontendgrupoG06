@@ -60,6 +60,22 @@ export const routes: Routes = [
       import('./components/suscripciones-list/suscripciones-list.component').then((m) => m.SuscripcionesListComponent),
   },
 
+  // Ruta tarifas (protegida - solo admin)
+  {
+    path: 'tarifas',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/tarifas-list/tarifas-list.component').then((m) => m.TarifasListComponent),
+  },
+
+  // Ruta pagos (protegida - solo admin)
+  {
+    path: 'pagos',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/pagos-list/pagos-list.component').then((m) => m.PagosListComponent),
+  },
+
   // Ruta desconocida
   { path: '**', redirectTo: 'home' },
 

@@ -1,0 +1,93 @@
+<div class="container-fluid py-4">
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-1">🏦 Historial de Pagos</h2>
+      <p class="text-secondary mb-0">Registro de todas las transacciones realizadas</p>
+    </div>
+  </div>
+
+  <!-- Alertas -->
+  @if (mensajeExito) {
+    <div class="alert alert-success alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ✅ {{ mensajeExito }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+  @if (mensajeError) {
+    <div class="alert alert-danger alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ❌ {{ mensajeError }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+
+  @if (cargando) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-secondary mt-2">Cargando pagos...</p>
+    </div>
+  }
+
+  <!-- Tabla de Pagos -->
+  @if (!cargando) {
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            
+            <thead class="table-dark">
+              <tr>
+                <th class="px-4">Fecha de Pago</th>
+                <th>Transacción / Método</th>
+                <th>Monto Cobrado</th>
+                <th>Cuota Asociada</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center px-4">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (pago of pagos; track pago.id) {
+                <tr>
+                  <td class="px-4 fw-bold text-dark">{{ pago.fecha }}</td>
+                  
+                  <td><span class="badge bg-light text-dark border">{{ pago.transaccion }}</span></td>
+                  
+                  <td class="text-success fw-bold">${{ pago.monto }}</td>
+                  
+                  <td class="text-secondary">
+                    @if(pago.tarifa; as t) {
+                      Mes {{ t.mes }}/{{ t.anio }}
+                    }
+                  </td>
+                  
+                  <td class="text-center">
+                    @if (pago.activo) {
+                      <span class="badge bg-success px-3">Completado</span>
+                    } @else {
+                      <span class="badge bg-danger px-3">Anulado</span>
+                    }
+                  </td>
+                  
+                  <td class="text-center px-4">
+                    @if (pago.activo) {
+                      <button class="btn btn-outline-danger btn-sm" (click)="anularPago(pago.id)" title="Anular Pago">
+                        🚫 Anular
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+
+              @if (pagos.length === 0) {
+                <tr><td colspan="6" class="text-center text-secondary py-4">No hay pagos registrados.</td></tr>
+              }
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>
