@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LoginService } from './login.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class EjercicioService {
+export class RutinaService {
 
-  private hostBase = 'http://localhost:3000/api/ejercicios/';
+  private hostBase = 'http://localhost:3000/api/rutinas/';
 
   constructor(private _http: HttpClient, private loginService: LoginService) {}
 
@@ -21,21 +21,33 @@ export class EjercicioService {
     };
   }
 
-  public getEjercicios(): Observable<any> {
-    return this._http.get(this.hostBase, this.getAuthHeaders());
+  public getRutinas(idUsuario?: number, idEjercicio?: number): Observable<any> {
+    let parametros = new HttpParams();
+    
+    if (idUsuario) {
+      parametros = parametros.append('idUsuario', idUsuario);
+    }
+    if (idEjercicio) {
+      parametros = parametros.append('idEjercicio', idEjercicio);
+    }
+    
+    return this._http.get(this.hostBase, { 
+      headers: this.getAuthHeaders().headers, 
+      params: parametros 
+    });
   }
 
-  public createEjercicio(datos: any): Observable<any> {
+  public createRutina(datos: any): Observable<any> {
     const body = JSON.stringify(datos);
     return this._http.post(this.hostBase, body, this.getAuthHeaders());
   }
 
-  public editEjercicio(id: number, datos: any): Observable<any> {
+  public editRutina(id: number, datos: any): Observable<any> {
     const body = JSON.stringify(datos);
     return this._http.put(this.hostBase + id, body, this.getAuthHeaders());
   }
 
-  public deleteEjercicio(id: number): Observable<any> {
+  public deleteRutina(id: number): Observable<any> {
     return this._http.delete(this.hostBase + id, this.getAuthHeaders());
   }
 }
