@@ -37,6 +37,10 @@ export class RutinaService {
     });
   }
 
+  public getMisRutinas(): Observable<any> {
+    return this._http.get(this.hostBase + 'mis-rutinas', this.getAuthHeaders());
+  }
+
   public createRutina(datos: any): Observable<any> {
     const body = JSON.stringify(datos);
     return this._http.post(this.hostBase, body, this.getAuthHeaders());
