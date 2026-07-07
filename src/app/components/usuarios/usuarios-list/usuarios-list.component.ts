@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../services/usuario.service';
+import { RolService } from '../../../services/rol.service';
 import { Usuario } from '../../../models/usuario.model';
 
 @Component({
@@ -21,11 +22,14 @@ export class UsuariosListComponent implements OnInit {
   mensajeError: string = '';
 
   usuarioSeleccionado: Usuario | null = null;
+  usuarioParaRoles: Usuario | null = null;
+  rolesUsuario: string[] = [];
 
   editForm: FormGroup;
 
   constructor(
     private usuarioService: UsuarioService,
+    private rolService: RolService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ) {
@@ -135,6 +139,65 @@ export class UsuariosListComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  abrirModalRoles(usuario: Usuario): void {
+    this.usuarioParaRoles = usuario;
+    this.cargarRolesUsuario(usuario.dni);
+  }
+
+  cargarRolesUsuario(dni: string): void {
+    this.rolService.getRolesByUsuario(dni).subscribe({
+      next: (res: any) => {
+        if (res.status === '1') {
+          this.rolesUsuario = res.roles.map((r: any) => r.nombre);
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.mensajeError = 'Error al cargar roles del usuario.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  tieneRol(nombreRol: string): boolean {
+    return this.rolesUsuario.includes(nombreRol);
+  }
+
+  toggleRol(nombreRol: string): void {
+    if (!this.usuarioParaRoles) return;
+    const dni = this.usuarioParaRoles.dni;
+
+    if (this.tieneRol(nombreRol)) {
+      this.rolService.removeRolFromUsuario(dni, nombreRol).subscribe({
+        next: (res: any) => {
+          if (res.status === '1') {
+            this.rolesUsuario = this.rolesUsuario.filter(r => r !== nombreRol);
+            this.mensajeExito = `Rol ${nombreRol} revocado.`;
+          }
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.mensajeError = 'Error al revocar rol.';
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      this.rolService.assignRolToUsuario(dni, nombreRol).subscribe({
+        next: (res: any) => {
+          if (res.status === '1') {
+            this.rolesUsuario.push(nombreRol);
+            this.mensajeExito = `Rol ${nombreRol} asignado.`;
+          }
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.mensajeError = 'Error al asignar rol.';
+          this.cdr.detectChanges();
+        }
+      });
+    }
   }
 
   limpiarMensajes(): void {
