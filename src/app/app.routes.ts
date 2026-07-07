@@ -37,6 +37,14 @@ export const routes: Routes = [
       import('./components/usuarios/usuarios-list/usuarios-list.component').then((m) => m.UsuariosListComponent),
   },
 
+  // Ruta dashboard (protegida - solo admin)
+  {
+    path: 'dashboard',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
+  },
+
   // Ruta ejercicios (protegida - solo entrenador)
   {
     path: 'ejercicios',
