@@ -1,0 +1,76 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <div class="container">
+    
+    <a class="navbar-brand fw-bold" [routerLink]="['/home']">
+      🏋️ GymHub
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarGym" aria-controls="navbarGym" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarGym">
+      
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- Boton de Usuarios (solo admin) -->
+        @if (loginService.isLoggedIn() && loginService.getRol() === 'admin') {
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/usuarios']">Usuarios</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/suscripciones']">Suscripciones</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/tarifas']">Tarifas (Cuotas)</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/pagos']">Pagos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/dashboard']">📊 Dashboard</a>
+          </li>
+        }
+
+        <!-- Botones del Entrenador -->
+        @if (loginService.isLoggedIn() && loginService.getRol() === 'entrenador') {
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/ejercicios']">Ejercicios</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/rutinas']">Rutinas</a>
+          </li>
+        }
+
+        <!-- Botones del Socio -->
+        @if (loginService.isLoggedIn() && loginService.getRol() === 'socio') {
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/mis-pagos']">Mis Pagos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/mis-rutinas']">Mis Rutinas</a>
+          </li>
+        }
+
+      </ul>
+      
+      <div class="d-flex ms-auto">
+        
+        @if (loginService.isLoggedIn()) {
+          <span class="navbar-text me-3 text-light">
+            Hola, {{ loginService.getNombre() + "!" }}
+          </span>
+          <button class="btn btn-outline-danger btn-sm px-4 fw-bold" (click)="logout()">
+            Cerrar Sesión
+          </button>
+        } 
+        <!-- @else {
+          <button class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" (click)="goToLogin()">
+            Iniciar Sesión
+          </button>
+        } -->
+        
+      </div>
+
+    </div>
+  </div>
+</nav>

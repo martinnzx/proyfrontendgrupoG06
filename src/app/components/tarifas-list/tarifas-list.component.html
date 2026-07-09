@@ -1,0 +1,225 @@
+<div class="container-fluid py-4">
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-1">📝 Generación de Tarifas</h2>
+      <p class="text-secondary mb-0">Gestión de cuotas mensuales a partir de suscripciones</p>
+    </div>
+    <button class="btn btn-primary fw-bold px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTarifa" (click)="abrirModalNuevo()">
+      + Generar Cuota
+    </button>
+  </div>
+
+  <!-- Alertas -->
+  @if (mensajeExito) {
+    <div class="alert alert-success alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ✅ {{ mensajeExito }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+  @if (mensajeError) {
+    <div class="alert alert-danger alert-dismissible d-flex align-items-center shadow-sm" role="alert">
+      ❌ {{ mensajeError }}
+      <button type="button" class="btn-close ms-auto" (click)="limpiarMensajes()"></button>
+    </div>
+  }
+
+  @if (cargando) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-secondary mt-2">Cargando tarifas...</p>
+    </div>
+  }
+
+  <!-- Tabla de Tarifas -->
+  @if (!cargando) {
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            
+            <thead class="table-dark">
+              <tr>
+                <th class="px-4">ID Suscripción</th>
+                <th>Periodo (Mes/Año)</th>
+                <th>Precio</th>
+                <th class="text-center">Estado de Pago</th>
+                <th class="text-center">Vigencia</th>
+                <th class="text-center px-4">Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (tarifa of tarifas; track tarifa.id) {
+                <tr>
+                  <td class="px-4 fw-bold text-secondary">
+                    #{{ tarifa.suscripcion?.id }}
+                  </td>
+                  
+                  <td class="fw-bold text-dark">{{ tarifa.mes }} / {{ tarifa.anio }}</td>
+                  
+                  <td class="text-primary fw-bold">${{ tarifa.precio }}</td>
+                  
+                  <td class="text-center">
+                    @if (tarifa.pagado) {
+                      <span class="badge bg-success px-3">Pagado</span>
+                    } @else {
+                      <span class="badge bg-warning text-dark px-3">Impago</span>
+                    }
+                  </td>
+
+                  <td class="text-center">
+                    @if (tarifa.activo) {
+                      <span class="badge bg-info px-3">Vigente</span>
+                    } @else {
+                      <span class="badge bg-danger px-3">Anulada</span>
+                    }
+                  </td>
+                  
+                  <td class="text-center px-4">
+                    <div class="btn-group btn-group-sm">
+                      @if (!tarifa.pagado && tarifa.activo) {
+                        <!-- Boton para Registrar Pago Local -->
+                        <button class="btn btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalPago" (click)="abrirModalPago(tarifa)" title="Registrar Pago Manual">
+                          💵 Efectivo
+                        </button>
+                        <!-- Boton para Pagar con MercadoPago -->
+                        <button class="btn btn-primary fw-bold" (click)="pagarConMP(tarifa)" [disabled]="generandoLinkMP" title="Pagar Online con MercadoPago">
+                          @if (generandoLinkMP) {
+                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                          } @else {
+                            💳 MP
+                          }
+                        </button>
+                      }
+                      
+                      @if (tarifa.activo && !tarifa.pagado) {
+                        <button class="btn btn-outline-danger" (click)="anularTarifa(tarifa.id)" title="Anular Cuota">🚫 Anular</button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+
+              @if (tarifas.length === 0) {
+                <tr><td colspan="6" class="text-center text-secondary py-4">No hay cuotas generadas.</td></tr>
+              }
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- ===== MODAL GENERAR TARIFA ===== -->
+<div class="modal fade" id="modalTarifa" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-light border-bottom-0">
+        <h5 class="modal-title fw-bold text-dark">✨ Generar Cuota Mensual</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      
+      <div class="modal-body pt-3">
+        <form [formGroup]="tarifaForm">
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">SELECCIONAR SUSCRIPCIÓN</label>
+            <select class="form-select form-select-lg fs-6" formControlName="suscripcionId" (change)="alCambiarSuscripcion($event)" [class.is-invalid]="tarifaForm.get('suscripcionId')?.invalid && tarifaForm.get('suscripcionId')?.touched">
+              <option value="">Buscar suscripción activa...</option>
+              @for (susc of suscripciones; track susc.id) {
+                @if (susc.activo) {
+                  <!-- Si tuviéramos el include usuario podríamos mostrar el nombre, por ahora mostramos el ID y el precio -->
+                  <option [value]="susc.id">Suscripción #{{ susc.id }} - Mensualidad: ${{ susc.precio }}</option>
+                }
+              }
+            </select>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-secondary">MES</label>
+              <select class="form-select" formControlName="mes">
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03">Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </select>
+            </div>
+            
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-secondary">AÑO</label>
+              <input type="number" class="form-control" formControlName="anio">
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label fw-semibold small text-secondary">PRECIO A COBRAR ($)</label>
+            <input type="number" class="form-control form-control-lg fs-6 text-primary fw-bold" formControlName="precio">
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer border-top-0 pb-4 pe-4">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary fw-bold px-4" [disabled]="tarifaForm.invalid" data-bs-dismiss="modal" (click)="guardarTarifa()">
+          Generar Cuota
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL REGISTRAR PAGO ===== -->
+<div class="modal fade" id="modalPago" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-bottom-0">
+        <h5 class="modal-title fw-bold">💵 Registrar Pago Manual</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      
+      <div class="modal-body pt-4">
+        <div class="alert alert-warning mb-4">
+          Vas a registrar el cobro de la Cuota del mes <strong>{{ tarifaParaPagar?.mes }}/{{ tarifaParaPagar?.anio }}</strong> por un monto de <strong>${{ tarifaParaPagar?.precio }}</strong>.
+        </div>
+
+        <form [formGroup]="pagoForm">
+          <div class="row mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-secondary">FECHA DE PAGO</label>
+              <input type="date" class="form-control" formControlName="fecha">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-secondary">MONTO COBRADO</label>
+              <input type="number" class="form-control text-success fw-bold" formControlName="monto">
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">MÉTODO / TRANSACCIÓN</label>
+            <input type="text" class="form-control" formControlName="transaccion" placeholder="Ej: Efectivo, Transf. 12345">
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer border-top-0 pb-4 pe-4">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success fw-bold px-4" [disabled]="pagoForm.invalid" data-bs-dismiss="modal" (click)="registrarPago()">
+          Confirmar Cobro
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

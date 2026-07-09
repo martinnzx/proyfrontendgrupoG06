@@ -1,0 +1,163 @@
+@if (!loginService.isLoggedIn()) {
+  <div class="min-vh-100 bg-light d-flex align-items-center">
+    <div class="container py-5">
+      <div class="row align-items-center">
+        
+        <div class="col-lg-6 text-center text-lg-start">
+          <h1 class="display-3 fw-bold text-dark mb-4">
+            Potenciá tu <span class="text-primary">Gimnasio</span> al máximo
+          </h1>
+          <p class="lead text-secondary mb-4">
+            GymHub es la plataforma definitiva para gestionar tus socios, rutinas y pagos. Todo en un solo lugar, de forma rápida y segura.
+          </p>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <button class="btn btn-primary btn-lg px-4 me-md-2 fw-bold" [routerLink]="['/login']">
+              Iniciar Sesión
+            </button>
+            
+            <button class="btn btn-outline-secondary btn-lg px-4 fw-bold" [routerLink]="['/register']">
+              Registrarse
+            </button>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mt-5 mt-lg-0 text-center">
+          <div style="font-size: 10rem;">
+            🏋️‍♂️💪
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white py-5">
+    <div class="container text-center">
+      <h2 class="fw-bold text-dark mb-4">📍 Nuestra Ubicación</h2>
+      <p class="text-secondary mb-4">Encontrá tu sucursal más cercana y vení a entrenar con nosotros.</p>
+      
+      <div class="card shadow border-0 overflow-hidden" style="border-radius: 15px;">
+        <iframe 
+          src="https://maps.google.com/maps?q=Quantum+Gym%2C+Jujuy%2C+Argentina&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+          width="100%" 
+          height="400" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </div>
+}
+
+@else {
+  <div class="min-vh-100 bg-light py-5">
+    <div class="container">
+      
+      <div class="row mb-5 text-center text-md-start">
+        <div class="col">
+          <h1 class="display-5 fw-bold text-dark mb-2">
+            ¡Hola, <span class="text-primary">{{ loginService.getNombre() }}</span>! 👋
+          </h1>
+          <p class="lead text-secondary">
+            Bienvenido a tu portal personal de GymHub. ¿Qué querés hacer hoy?
+          </p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+
+        <!-- Cards de Administrador -->
+        @if (loginService.getRol() === 'admin') {         
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm text-center card-hover cursor-pointer" [routerLink]="['/usuarios']">
+              <div class="card-body py-5">
+                <div class="display-4 mb-3">👥</div>
+                <h4 class="fw-bold text-dark">Gestionar Usuarios</h4>
+                <p class="text-muted">Administrar permisos, altas y bajas.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm text-center card-hover cursor-pointer" [routerLink]="['/pagos']">
+              <div class="card-body py-5">
+                <div class="display-4 mb-3">💰</div>
+                <h4 class="fw-bold text-dark">Gestión de Pagos</h4>
+                <p class="text-muted">Ver historial de cuotas y transacciones.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm text-center card-hover cursor-pointer" [routerLink]="['/dashboard']">
+              <div class="card-body py-5">
+                <div class="display-4 mb-3">📊</div>
+                <h4 class="fw-bold text-dark">Panel de Control</h4>
+                <p class="text-muted">Ver todas las métricas e ingresos del gimnasio.</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Cards de Entrenador -->
+        @if (loginService.getRol() === 'entrenador') {
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm text-center card-hover cursor-pointer" [routerLink]="['/ejercicios']">
+              <div class="card-body py-5">
+                <div class="display-4 mb-3">🏆</div>
+                <h4 class="fw-bold text-dark">Mis Ejercicios</h4>
+                <p class="text-muted">Cargar nuevos ejercicios con videos de YouTube.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm text-center card-hover cursor-pointer" [routerLink]="['/rutinas']">
+              <div class="card-body py-5">
+                <div class="display-4 mb-3">📝</div>
+                <h4 class="fw-bold text-dark">Armar Rutinas</h4>
+                <p class="text-muted">Asignar rutinas personalizadas a los socios.</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Cards de Socio -->
+        @if (loginService.getRol() === 'socio') {
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm text-center card-hover cursor-pointer" [routerLink]="['/mis-rutinas']">
+              <div class="card-body py-5">
+                <div class="display-4 mb-3">📅</div>
+                <h4 class="fw-bold text-dark">Mis Rutinas</h4>
+                <p class="text-muted">Ver los ejercicios que el entrenador armó para mí.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm text-center card-hover cursor-pointer" [routerLink]="['/mis-pagos']">
+              <div class="card-body py-5">
+                <div class="display-4 mb-3">💳</div>
+                <h4 class="fw-bold text-dark">Mis Pagos</h4>
+                <p class="text-muted">Consultar y pagar mi cuota del gimnasio.</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (!loginService.getRol()) {
+          <div class="col-12">
+            <div class="alert alert-warning text-center">
+              <h4 class="fw-bold">⚠️ Cuenta Pendiente de Verificación</h4>
+              <p class="mb-0">Tu cuenta fue creada pero todavía no tenés un rol asignado. Por favor, pedíle al administrador en recepción que habilite tu acceso.</p>
+            </div>
+          </div>
+        }
+
+      </div>
+    </div>
+  </div>
+
+}
