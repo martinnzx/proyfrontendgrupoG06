@@ -53,7 +53,7 @@ export class RutinasListComponent implements OnInit {
   }
 
   cargarDatosFormulario(): void {
-    this.usuarioService.getUsuarios().subscribe({
+    this.usuarioService.getSocios().subscribe({
       next: (res: any) => {
         if (res.status === '1') this.usuarios = res.usuarios;
       }

@@ -42,7 +42,7 @@
         }
 
         <!-- Botones del Socio -->
-        @if (loginService.isLoggedIn() && (loginService.getRol() === 'socio' || !loginService.getRol())) {
+        @if (loginService.isLoggedIn() && loginService.getRol() === 'socio') {
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/mis-pagos']">Mis Pagos</a>
           </li>

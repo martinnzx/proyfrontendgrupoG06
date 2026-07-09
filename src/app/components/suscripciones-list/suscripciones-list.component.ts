@@ -46,7 +46,7 @@ export class SuscripcionesListComponent implements OnInit {
 
   cargarDatos(): void {
     this.cargando = true;
-    this.usuarioService.getUsuarios().subscribe({
+    this.usuarioService.getSocios().subscribe({
       next: (resUsu: any) => {
         if (resUsu.status === '1') this.usuarios = resUsu.usuarios;
         
@@ -144,7 +144,7 @@ export class SuscripcionesListComponent implements OnInit {
   }
 
   eliminarSuscripcion(id: number): void {
-    if (!confirm('¿Estás seguro de eliminar esta suscripción? (Si tiene un pago asociado, el backend no te dejará)')) return;
+    if (!confirm('¿Estás seguro de eliminar esta suscripción?')) return;
 
     this.suscripcionService.deleteSuscripcion(id).subscribe({
       next: (response: any) => {

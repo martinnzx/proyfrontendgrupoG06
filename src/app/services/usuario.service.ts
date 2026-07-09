@@ -26,6 +26,11 @@ export class UsuarioService {
     return this._http.get(this.hostBase, this.getAuthHeaders());
   }
 
+  // Obtener solo los socios (requiere token)
+  public getSocios(): Observable<any> {
+    return this._http.get(this.hostBase + 'socios/list', this.getAuthHeaders());
+  }
+
   // Editar un usuario por DNI (requiere token + ser admin)
   public updateUsuario(dni: string, datos: any): Observable<any> {
     const body = JSON.stringify(datos);
