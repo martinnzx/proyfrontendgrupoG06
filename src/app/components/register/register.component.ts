@@ -41,7 +41,6 @@ export class RegisterComponent implements OnInit {
   get emailCtrl(){ return this.registerForm.get('email'); }
   get password() { return this.registerForm.get('password'); }
 
-  // Getters que devuelven true/false para el [class.is-invalid] del HTML
   get isNombreInvalid()   { const c = this.nombre;   return c ? c.invalid && c.touched : false; }
   get isApellidoInvalid() { const c = this.apellido; return c ? c.invalid && c.touched : false; }
   get isDniInvalid()      { const c = this.dni;      return c ? c.invalid && c.touched : false; }
@@ -116,7 +115,7 @@ export class RegisterComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMsg = 'Error al conectar con el servidor. Intentá de nuevo.';
+        this.errorMsg = err.error?.msg || 'Error al conectar con el servidor. Intentá de nuevo.';
         console.error(err);
         this.cdr.detectChanges();
       }

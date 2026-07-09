@@ -109,7 +109,6 @@ export class LoginComponent implements OnInit {
             response.usuario.rol
           );
           this.router.navigate(['/home']);
-          // window.location.href = '/usuarios';
         } else {
           this.errorMsg = response.msg;
         }
@@ -120,7 +119,7 @@ export class LoginComponent implements OnInit {
         if (err.status === 401) {
           this.errorMsg = 'Credenciales inválidas. Verificá tu email y contraseña.';
         } else {
-          this.errorMsg = 'Error al conectar con el servidor. Intentá de nuevo.';
+          this.errorMsg = err.error?.msg || 'Error al conectar con el servidor. Intentá de nuevo.';
         }
         console.error(err);
         this.cdr.detectChanges();

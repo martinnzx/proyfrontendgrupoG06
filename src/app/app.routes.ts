@@ -45,23 +45,7 @@ export const routes: Routes = [
       import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
 
-  // Ruta ejercicios (protegida - solo entrenador)
-  {
-    path: 'ejercicios',
-    canActivate: [entrenadorGuard],
-    loadComponent: () =>
-      import('./components/ejercicios-list/ejercicios-list.component').then((m) => m.EjerciciosListComponent),
-  },
-
-  // Ruta rutinas (protegida - solo entrenador)
-  {
-    path: 'rutinas',
-    canActivate: [entrenadorGuard],
-    loadComponent: () =>
-      import('./components/rutinas-list/rutinas-list.component').then((m) => m.RutinasListComponent),
-  },
-
-  // Ruta suscripciones (protegida - solo admin)
+    // Ruta suscripciones (protegida - solo admin)
   {
     path: 'suscripciones',
     canActivate: [adminGuard],
@@ -85,6 +69,22 @@ export const routes: Routes = [
       import('./components/pagos-list/pagos-list.component').then((m) => m.PagosListComponent),
   },
 
+  // Ruta ejercicios (protegida - solo entrenador)
+  {
+    path: 'ejercicios',
+    canActivate: [entrenadorGuard],
+    loadComponent: () =>
+      import('./components/ejercicios-list/ejercicios-list.component').then((m) => m.EjerciciosListComponent),
+  },
+
+  // Ruta rutinas (protegida - solo entrenador)
+  {
+    path: 'rutinas',
+    canActivate: [entrenadorGuard],
+    loadComponent: () =>
+      import('./components/rutinas-list/rutinas-list.component').then((m) => m.RutinasListComponent),
+  },
+
   // Rutas del socio (protegidas)
   {
     path: 'mis-pagos',
@@ -101,27 +101,5 @@ export const routes: Routes = [
 
   // Ruta desconocida
   { path: '**', redirectTo: 'home' },
-
-  /* ----------------------------------------------------
-
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  {
-    path: 'login',
-    loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
-  },
-  {
-    path: 'register',
-    loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
-  },
-  {
-    path: 'usuarios',
-    loadComponent: () =>
-      import('./features/usuarios/usuario-list/usuario-list').then(
-        (m) => m.UsuarioListComponent
-      ),
-  },
-  { path: '**', redirectTo: 'login' },
-  
-  ---------------------------------------------------- */
 
 ];
