@@ -28,6 +28,11 @@ export class RutinasListComponent implements OnInit {
   rutinaForm: FormGroup;
   modoEdicion: boolean = false;
   rutinaSeleccionadaId: number | null = null;
+  ejerciciosList: Ejercicio[] = [];
+  filtroEjercicios: string = '';
+  
+  generandoIA: boolean = false;
+  errorIA: string = '';
 
   constructor(
     private rutinaService: RutinaService,
@@ -43,7 +48,7 @@ export class RutinasListComponent implements OnInit {
       descripcion: ['', [Validators.required]],
       activo: [true],
       usuarioId: ['', [Validators.required]],
-      ejercicioId: ['', [Validators.required]]
+      ejerciciosIds: [[], [Validators.required]]
     });
   }
 
@@ -85,7 +90,7 @@ export class RutinasListComponent implements OnInit {
   abrirModalNuevo(): void {
     this.modoEdicion = false;
     this.rutinaSeleccionadaId = null;
-    this.rutinaForm.reset({ activo: true, dia_semana: '', turno: '', usuarioId: '', ejercicioId: '' });
+    this.rutinaForm.reset({ activo: true, dia_semana: '', turno: '', usuarioId: '', ejerciciosIds: [] });
   }
 
   abrirModalEditar(rutina: Rutina): void {
@@ -97,8 +102,8 @@ export class RutinasListComponent implements OnInit {
       nombre: rutina.nombre,
       descripcion: rutina.descripcion,
       activo: rutina.activo,
-      usuarioId: (rutina as any).usuarioId,
-      ejercicioId: (rutina as any).ejercicioId
+      usuarioId: rutina.usuario?.id || (rutina as any).usuarioId,
+      ejerciciosIds: rutina.ejercicios ? rutina.ejercicios.map(e => e.id) : []
     });
   }
 
@@ -113,7 +118,7 @@ export class RutinasListComponent implements OnInit {
       descripcion: formVals.descripcion,
       activo: formVals.activo,
       usuario: { id: Number(formVals.usuarioId) },
-      ejercicio: { id: Number(formVals.ejercicioId) }
+      ejercicios: formVals.ejerciciosIds.map((id: any) => ({ id: Number(id) }))
     };
 
     if (this.modoEdicion && this.rutinaSeleccionadaId) {
@@ -139,12 +144,44 @@ export class RutinasListComponent implements OnInit {
     }
   }
 
+  generarConIA() {
+    const nombreRutina = this.rutinaForm.get('nombre')?.value;
+    const ejerciciosIdsSeleccionados = this.rutinaForm.get('ejerciciosIds')?.value || [];
+    
+    if (!nombreRutina) return;
+    
+    const ejerciciosNombres = this.ejercicios
+      .filter(e => ejerciciosIdsSeleccionados.includes(String(e.id)) || ejerciciosIdsSeleccionados.includes(e.id))
+      .map(e => e.nombre);
+
+    this.generandoIA = true;
+    this.errorIA = '';
+    
+    this.rutinaService.generarRutinaIA(nombreRutina, ejerciciosNombres).subscribe({
+      next: (res) => {
+        this.generandoIA = false;
+        if (res.status === '1') {
+          this.rutinaForm.patchValue({
+            descripcion: res.textoGenerado
+          });
+        } else {
+          this.errorIA = res.msg || 'Error al generar la rutina';
+        }
+      },
+      error: (err) => {
+        this.generandoIA = false;
+        this.errorIA = err.error?.msg || 'Error de conexión con la IA de OpenRouter';
+        console.error('Error IA:', err);
+      }
+    });
+  }
+
   cambiarEstado(rutina: Rutina): void {
     const datos = {
       ...rutina,
       activo: !rutina.activo,
-      usuario: { id: (rutina as any).usuarioId },
-      ejercicio: { id: (rutina as any).ejercicioId }
+      usuario: { id: rutina.usuario?.id },
+      ejercicios: rutina.ejercicios?.map(e => ({ id: e.id })) || []
     };
     
     this.rutinaService.editRutina(rutina.id, datos).subscribe({
