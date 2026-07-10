@@ -135,7 +135,7 @@ export class RutinasListComponent implements OnInit {
       this.rutinaService.createRutina(datosParaBackend).subscribe({
         next: (response: any) => {
           if (response.status === '1') {
-            this.mensajeExito = 'Rutina creada con éxito.';
+            this.mensajeExito = 'Rutina creada con éxito y notificada por Email.';
             this.cargarRutinas();
           } else { this.mensajeError = response.msg; }
           this.cdr.detectChanges();

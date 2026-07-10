@@ -98,6 +98,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/mis-rutinas/mis-rutinas').then((m) => m.MisRutinasComponent),
   },
+  
+  {
+    path: 'nutricion',
+    canActivate: [socioGuard],
+    loadComponent: () =>
+      import('./components/nutricion/nutricion.component').then((m) => m.NutricionComponent),
+  },
 
   // Ruta desconocida
   { path: '**', redirectTo: 'home' },

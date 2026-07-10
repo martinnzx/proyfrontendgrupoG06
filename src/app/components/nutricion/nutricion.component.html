@@ -1,0 +1,98 @@
+<div class="container-fluid py-4">
+  <!-- Encabezado y Buscador -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8 text-center">
+      <h2 class="fw-bold text-dark mb-3">🍏 Buscador de Nutrición</h2>
+      <p class="text-secondary mb-4">Descubrí las calorías y macronutrientes de miles de alimentos al instante.</p>
+      
+      <div class="input-group input-group-lg shadow-sm">
+        <span class="input-group-text bg-white border-end-0 text-primary">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text" class="form-control border-start-0 ps-0" 
+               placeholder="Ej: Manzana, Pollo, Arroz..." 
+               [(ngModel)]="terminoBusqueda" 
+               (keyup.enter)="buscar()">
+        <button class="btn btn-primary fw-bold px-4" type="button" (click)="buscar()" [disabled]="cargando || !terminoBusqueda.trim()">
+          @if(cargando) {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          } @else {
+            Buscar
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerta de Error -->
+  @if (mensajeError) {
+    <div class="alert alert-danger text-center shadow-sm mx-auto" style="max-width: 600px;">
+      ❌ {{ mensajeError }}
+    </div>
+  }
+
+  <!-- Resultados -->
+  @if (!cargando && busquedaRealizada && alimentos.length === 0 && !mensajeError) {
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-emoji-frown fs-1"></i>
+      <p class="mt-3">No encontramos resultados para "{{ terminoBusqueda }}". ¡Intentá con otra palabra!</p>
+    </div>
+  }
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+    @for (alimento of alimentos; track alimento.id) {
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm hover-elevate">
+          
+          <div class="card-header bg-white border-bottom-0 pt-4 pb-0 text-center">
+            <img [src]="alimento.imagen" [alt]="alimento.nombre" class="img-fluid rounded-circle shadow-sm object-fit-cover" style="width: 120px; height: 120px; border: 4px solid #f8f9fa;">
+          </div>
+          
+          <div class="card-body text-center">
+            <h5 class="card-title fw-bold text-dark mb-1">{{ alimento.nombre }}</h5>
+            <p class="card-text text-muted small mb-3">Marca: {{ alimento.marca }}</p>
+            
+            <div class="bg-light rounded-3 p-3 mb-3">
+              <h3 class="text-primary fw-bold mb-0">{{ alimento.nutrientes.calorias | number:'1.0-0' }} <span class="fs-6 text-muted fw-normal">kcal</span></h3>
+              <small class="text-secondary">Por cada 100g</small>
+            </div>
+
+            <!-- Macros -->
+            <div class="row g-2 text-start">
+              <div class="col-12">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span class="fw-semibold text-danger">Proteínas</span>
+                  <span>{{ alimento.nutrientes.proteinas | number:'1.1-1' }}g</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-danger" [style.width.%]="(alimento.nutrientes.proteinas / 100) * 100"></div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="d-flex justify-content-between small mb-1 mt-2">
+                  <span class="fw-semibold text-warning text-darken">Carbohidratos</span>
+                  <span>{{ alimento.nutrientes.carbohidratos | number:'1.1-1' }}g</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-warning" [style.width.%]="(alimento.nutrientes.carbohidratos / 100) * 100"></div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="d-flex justify-content-between small mb-1 mt-2">
+                  <span class="fw-semibold text-info text-darken">Grasas Totales</span>
+                  <span>{{ alimento.nutrientes.grasas | number:'1.1-1' }}g</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-info" [style.width.%]="(alimento.nutrientes.grasas / 100) * 100"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
