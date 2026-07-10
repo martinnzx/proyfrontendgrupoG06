@@ -99,6 +99,14 @@ export const routes: Routes = [
       import('./components/mis-rutinas/mis-rutinas').then((m) => m.MisRutinasComponent),
   },
   
+  // Ruta pago exitoso mercado pago
+  {
+    path: 'pago-exitoso',
+    canActivate: [socioGuard],
+    loadComponent: () =>
+      import('./components/pago-exitoso-component/pago-exitoso-component.component').then((m) => m.PagoExitosoComponentComponent),
+  },
+ 
   {
     path: 'nutricion',
     canActivate: [socioGuard],
