@@ -22,15 +22,24 @@
               
               <p class="card-text mb-2"><strong>Descripción del Entrenador:</strong> {{ rutina.descripcion }}</p>
               
-              <div class="alert alert-info py-2">
-                <strong>Ejercicio:</strong> {{ rutina.ejercicio?.nombre }}<br>
-                <small>{{ rutina.ejercicio?.descripcion }}</small>
-              </div>
-              
-              @if (getSafeUrl(rutina.ejercicio?.youtube_url)) {
-                <div class="ratio ratio-16x9">
-                  <iframe [src]="getSafeUrl(rutina.ejercicio?.youtube_url)" title="YouTube video" allowfullscreen></iframe>
+              @if (rutina.ejercicios && rutina.ejercicios.length > 0) {
+                <div class="mt-3">
+                  <h6 class="fw-bold text-dark">Ejercicios:</h6>
+                  @for (eje of rutina.ejercicios; track eje.id) {
+                    <div class="alert alert-info py-2 mb-2">
+                      <strong>{{ eje.nombre }}</strong><br>
+                      <small>{{ eje.descripcion }}</small>
+                      
+                      @if (getSafeUrl(eje.youtube_url)) {
+                        <div class="ratio ratio-16x9 mt-2">
+                          <iframe [src]="getSafeUrl(eje.youtube_url)" title="YouTube video" allowfullscreen></iframe>
+                        </div>
+                      }
+                    </div>
+                  }
                 </div>
+              } @else {
+                <div class="alert alert-warning py-2">Sin ejercicios asignados.</div>
               }
             </div>
           </div>
