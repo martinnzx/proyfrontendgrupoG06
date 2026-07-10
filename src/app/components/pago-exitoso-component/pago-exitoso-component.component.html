@@ -1,0 +1,26 @@
+
+<section class="payment-result" [class.loading]="loading" [class.success]="paymentStatus === 'approved'" [class.pending]="paymentStatus === 'pending'" [class.rejected]="paymentStatus === 'rejected' || paymentStatus === 'failure'">
+  <div class="payment-icon" aria-hidden="true">
+    <span *ngIf="loading">⏳</span>
+    <span *ngIf="!loading && paymentStatus === 'approved'">✓</span>
+    <span *ngIf="!loading && paymentStatus === 'pending'">⏱</span>
+    <span *ngIf="!loading && (paymentStatus === 'rejected' || paymentStatus === 'failure')">✕</span>
+  </div>
+
+  <h2>
+    <ng-container *ngIf="loading">Procesando tu pago</ng-container>
+    <ng-container *ngIf="!loading && paymentStatus === 'approved'">Pago aprobado</ng-container>
+    <ng-container *ngIf="!loading && paymentStatus === 'pending'">Pago pendiente</ng-container>
+    <ng-container *ngIf="!loading && (paymentStatus === 'rejected' || paymentStatus === 'failure')">Pago rechazado</ng-container>
+    <ng-container *ngIf="!loading && !paymentStatus">Resultado no disponible</ng-container>
+  </h2>
+
+  <p class="message">{{ message }}</p>
+
+  <div class="details" *ngIf="!loading">
+    <p *ngIf="paymentId"><strong>ID de transacción:</strong> {{ paymentId }}</p>
+    <p *ngIf="paymentStatus"><strong>Estado:</strong> {{ paymentStatus }}</p>
+  </div>
+
+  <button type="button" class="home-btn" (click)="goHome()">Volver a home</button>
+</section>

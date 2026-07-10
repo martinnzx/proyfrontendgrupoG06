@@ -175,17 +175,27 @@ export class TarifasListComponent implements OnInit {
     this.limpiarMensajes();
     this.generandoLinkMP = true;
 
-    const title = `Cuota ${tarifa.mes}/${tarifa.anio} - Gimnasio`;
-    const description = `Pago de cuota mensual. Suscripción #${tarifa.suscripcion?.id}`;
-    const precio = Number(tarifa.precio);
+    const baseUrl = window.location.origin;
+    const successUrl = `${baseUrl}/pago-exitoso`;
+    const payload = {
+      title: `Cuota ${tarifa.mes}/${tarifa.anio} - Gimnasio`,
+      quantity: 1,
+      price: parseFloat(tarifa.precio),
+      currency: 'ARS',
+      description: 'Pago de cuota de venta correspondiente a ' + tarifa.anio + '-' + tarifa.mes,
+      external_reference: tarifa.id,
+      back_urls: {
+        success: successUrl,
+        failure: successUrl,
+        pending: successUrl
+      }
+    };
 
-    const email = 'test_user_123@testuser.com';
-
-    this.mpService.generarLinkPago(title, description, precio, email).subscribe({
+    this.mpService.getLinkPago(payload).subscribe({
       next: (res: any) => {
         this.generandoLinkMP = false;
         if (res && res.init_point) {
-          // Dejamos el entorno de producción (init_point) para que se vea limpio y profesional en la defensa
+
           window.open(res.init_point, '_blank');
         } else {
           this.mensajeError = 'MercadoPago no devolvió un link válido. Revisá el ACCESS_TOKEN en el .env';

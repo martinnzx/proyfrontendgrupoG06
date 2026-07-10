@@ -17,12 +17,30 @@ export class MisPagosComponent implements OnInit {
   generandoLinkMP: boolean = false;
   mensajeError: string = '';
 
+  idUsuario: string = '';
+  detalle : any ;
+  idTarifa: string = '';
+  aPagar: string = '';
+  anio: string = '';
+  mes: string = '';
+
+
+
+
   constructor(
     private tarifaService: TarifaService,
     private mpService: MercadoPagoService,
     private loginService: LoginService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+     this.detalle = [] as any[];
+     this.idUsuario = '';
+     this.idTarifa = '';
+     this.aPagar = '';
+     this.anio = '';
+     this.mes = '';
+
+  }
 
   ngOnInit(): void {
     this.cargarMisTarifas();
@@ -44,31 +62,44 @@ export class MisPagosComponent implements OnInit {
       }
     });
   }
+ 
+  pagarConMP(tarifa: Tarifa) {
+    const idTarifa = String(tarifa.id);
+    const aPagar = tarifa.precio;
+    const anio = tarifa.anio;
+    const mes = tarifa.mes;
 
-  pagarConMP(tarifa: Tarifa): void {
-    this.mensajeError = '';
-    this.generandoLinkMP = true;
+    // Guardar el monto en sessionStorage para recuperarlo después
+    sessionStorage.setItem('montoPago', aPagar);
 
-    const title = `Cuota ${tarifa.mes}/${tarifa.anio} - GymHub`;
-    const description = `Pago mensual. Suscripción #${tarifa.suscripcion?.id}`;
-    const precio = Number(tarifa.precio);
-    const email = this.loginService.getEmail() || 'usuario@gymhub.com';
+    const baseUrl = window.location.origin;
+    const successUrl = `${baseUrl}/pago-exitoso`;
 
-    this.mpService.generarLinkPago(title, description, precio, email).subscribe({
-      next: (res: any) => {
-        this.generandoLinkMP = false;
-        if (res && res.init_point) {
-          window.open(res.init_point, '_blank');
-        } else {
-          this.mensajeError = 'Error al generar link de MercadoPago.';
-        }
+    const payload = {
+      title: 'Cuota GYM' + ' ' + anio + '-' + mes,
+      quantity: 1,
+      price: parseFloat(aPagar),
+      currency: 'ARS',
+      description: 'Pago de cuota de venta correspondiente a ' + anio + '-' + mes,
+      external_reference: idTarifa,
+      back_urls: {
+        success: successUrl,
+        failure: successUrl,
+        pending: successUrl
+      }
+    };
+
+    this.mpService.getLinkPago(payload).subscribe({
+      next: (res) => {
+        console.log('Respuesta del backend:', res);
+        window.location.href = res.init_point;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.generandoLinkMP = false;
-        this.mensajeError = 'Error de conexión con MercadoPago.';
-        this.cdr.detectChanges();
+        console.error('Error al crear el link de pago:', err);
       }
     });
   }
+
+
 }
