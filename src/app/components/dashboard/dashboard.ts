@@ -57,7 +57,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.charts.forEach(chart => chart.destroy());
     this.charts = [];
 
-    // 1. Grafico de Roles
     const chart1 = new Chart(this.chartRoles.nativeElement, {
       type: 'doughnut',
       data: {
@@ -71,7 +70,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       options: { responsive: true, maintainAspectRatio: false }
     });
 
-    // 2. Grafico de Estados
     const chart2 = new Chart(this.chartEstados.nativeElement, {
       type: 'pie',
       data: {
@@ -84,8 +82,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       },
       options: { responsive: true, maintainAspectRatio: false }
     });
-
-    // 3. Grafico de Finanzas
+    
     const chart3 = new Chart(this.chartFinanzas.nativeElement, {
       type: 'bar',
       data: {

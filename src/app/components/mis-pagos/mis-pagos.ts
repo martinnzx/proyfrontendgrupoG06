@@ -69,7 +69,6 @@ export class MisPagosComponent implements OnInit {
     const anio = tarifa.anio;
     const mes = tarifa.mes;
 
-    // Guardar el monto en sessionStorage para recuperarlo después
     sessionStorage.setItem('montoPago', aPagar);
 
     const baseUrl = window.location.origin;
