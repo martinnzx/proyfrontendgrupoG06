@@ -44,6 +44,13 @@ export const routes: Routes = [
       import('./components/ejercicios-list/ejercicios-list.component').then((m) => m.EjerciciosListComponent),
   },
 
+  // Ruta buscar ejercicio en YouTube (cualquier usuario logueado)
+  {
+    path: 'buscar-ejercicio',
+    loadComponent: () =>
+      import('./components/buscador-ejercicios/buscador-ejercicios.component').then((m) => m.BuscadorEjerciciosComponent),
+  },
+
   // Ruta rutinas (protegida - solo entrenador)
   {
     path: 'rutinas',

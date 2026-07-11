@@ -1,7 +1,8 @@
-<div class="min-vh-100 bg-light d-flex align-items-center">
+<!-- Hero -->
+<div class="bg-light d-flex align-items-center">
   <div class="container py-5">
     <div class="row align-items-center">
-      
+
       <div class="col-lg-6 text-center text-lg-start">
         <h1 class="display-3 fw-bold text-dark mb-4">
           Potenciá tu <span class="text-primary">Gimnasio</span> al máximo
@@ -13,7 +14,7 @@
           <button class="btn btn-primary btn-lg px-4 me-md-2 fw-bold" [routerLink]="['/login']">
             Iniciar Sesión
           </button>
-          
+
           <button class="btn btn-outline-secondary btn-lg px-4 fw-bold" [routerLink]="['/register']">
             Registrarse
           </button>
@@ -27,5 +28,93 @@
       </div>
 
     </div>
+  </div>
+</div>
+
+<!-- Que ofrece GymHub -->
+<div class="py-5 bg-white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold text-dark">Todo lo que necesitás en un solo lugar</h2>
+      <p class="text-secondary">Herramientas pensadas para socios, entrenadores y administradores.</p>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm text-center p-3">
+          <div class="fs-1 mb-3">🧑‍🤝‍🧑</div>
+          <h5 class="fw-bold">Gestión de Socios</h5>
+          <p class="text-secondary small mb-0">Administrá altas, bajas y datos de los socios del gimnasio de forma centralizada.</p>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm text-center p-3">
+          <div class="fs-1 mb-3">📋</div>
+          <h5 class="fw-bold">Rutinas y Ejercicios</h5>
+          <p class="text-secondary small mb-0">Los entrenadores arman rutinas personalizadas a partir de un catálogo de ejercicios.</p>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm text-center p-3">
+          <div class="fs-1 mb-3">▶️</div>
+          <h5 class="fw-bold">Buscador de Ejercicios</h5>
+          <p class="text-secondary small mb-0">Buscá cualquier ejercicio y mirá videos de YouTube que muestran cómo hacerlo bien.</p>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm text-center p-3">
+          <div class="fs-1 mb-3">💳</div>
+          <h5 class="fw-bold">Pagos y Suscripciones</h5>
+          <p class="text-secondary small mb-0">Controlá tarifas, suscripciones y el estado de los pagos de cada socio.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Como funciona -->
+<div class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold text-dark">¿Cómo funciona?</h2>
+    </div>
+
+    <div class="row g-4 text-center">
+
+      <div class="col-12 col-md-4">
+        <div class="fs-2 fw-bold text-primary mb-2">1</div>
+        <h5 class="fw-bold">Creá tu cuenta</h5>
+        <p class="text-secondary small">Registrate en la plataforma en pocos minutos.</p>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="fs-2 fw-bold text-primary mb-2">2</div>
+        <h5 class="fw-bold">Elegí tu rutina</h5>
+        <p class="text-secondary small">Tu entrenador te asigna una rutina con ejercicios y videos guía.</p>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="fs-2 fw-bold text-primary mb-2">3</div>
+        <h5 class="fw-bold">Empezá a entrenar</h5>
+        <p class="text-secondary small">Seguí tu progreso y gestioná tus pagos desde un solo lugar.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Llamado a la accion -->
+<div class="py-5 bg-primary bg-gradient text-white text-center">
+  <div class="container">
+    <h2 class="fw-bold mb-3">¿Listo para empezar?</h2>
+    <p class="mb-4">Sumate a GymHub y llevá la gestión de tu entrenamiento al siguiente nivel.</p>
+    <button class="btn btn-light btn-lg px-4 fw-bold" [routerLink]="['/register']">
+      Crear cuenta gratis
+    </button>
   </div>
 </div>
