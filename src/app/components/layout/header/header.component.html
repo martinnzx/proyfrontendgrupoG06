@@ -41,7 +41,6 @@
           </li>
         }
 
-        <!-- Buscador de ejercicios en YouTube (cualquier usuario logueado) -->
         @if (loginService.isLoggedIn()) {
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/buscar-ejercicio']">Buscar Ejercicio</a>

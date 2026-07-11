@@ -45,7 +45,6 @@ export const routes: Routes = [
       import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
 
-  // Ruta buscar ejercicio en YouTube (cualquier usuario logueado)
   {
     path: 'buscar-ejercicio',
     loadComponent: () =>
