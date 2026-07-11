@@ -25,40 +25,44 @@ export class LoginService {
   }
 
   public saveSession(token: string, email: string, id: number, nombre: string, rol: string): void {
-    sessionStorage.setItem('token', token);
-    sessionStorage.setItem('email', email);
-    sessionStorage.setItem('id', String(id));
-    sessionStorage.setItem('nombre', nombre);
-    sessionStorage.setItem('rol', rol);
+    localStorage.setItem('token', token);
+    localStorage.setItem('email', email);
+    localStorage.setItem('id', String(id));
+    localStorage.setItem('nombre', nombre);
+    localStorage.setItem('rol', rol);
   }
 
   public getToken(): string | null {
-    return sessionStorage.getItem('token');
+    return localStorage.getItem('token');
   }
 
   public getRol(): string | null {
-    return sessionStorage.getItem('rol');
+    const rol = localStorage.getItem('rol');
+    if (rol === 'null' || rol === 'undefined' || rol === '') {
+      return null;
+    }
+    return rol;
   }
   
   public getEmail(): string | null {
-    return sessionStorage.getItem('email');
+    return localStorage.getItem('email');
   }
 
   public getNombre(): string | null {
-    return sessionStorage.getItem('nombre');
+    return localStorage.getItem('nombre');
   }
 
   // Logout
   public logout(): void {
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('email');
-    sessionStorage.removeItem('id');
-    sessionStorage.removeItem('nombre');
-    sessionStorage.removeItem('rol');
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    localStorage.removeItem('id');
+    localStorage.removeItem('nombre');
+    localStorage.removeItem('rol');
   }
 
   public isLoggedIn(): boolean {
-    return sessionStorage.getItem('token') !== null;
+    return localStorage.getItem('token') !== null;
   }
 
   // Register
@@ -73,5 +77,10 @@ export class LoginService {
   return this._http.post('http://localhost:3000/api/usuarios/', body, httpOptions);
   }
 
-  
+  // Login con Google
+  public loginConGoogle(googleToken: string): Observable<any> {
+    const body = { token: googleToken };
+    return this._http.post(this.hostBase + 'google', body);
+  }
+
 }

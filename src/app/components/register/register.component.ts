@@ -1,8 +1,10 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { LoginService } from '../../services/login.service';
+
+declare var google: any;
 
 @Component({
   selector: 'app-register',
@@ -11,7 +13,7 @@ import { LoginService } from '../../services/login.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
 
   registerForm: FormGroup;
   errorMsg: string = '';
@@ -39,12 +41,54 @@ export class RegisterComponent {
   get emailCtrl(){ return this.registerForm.get('email'); }
   get password() { return this.registerForm.get('password'); }
 
-  // Getters que devuelven true/false para el [class.is-invalid] del HTML
   get isNombreInvalid()   { const c = this.nombre;   return c ? c.invalid && c.touched : false; }
   get isApellidoInvalid() { const c = this.apellido; return c ? c.invalid && c.touched : false; }
   get isDniInvalid()      { const c = this.dni;      return c ? c.invalid && c.touched : false; }
   get isEmailInvalid()    { const c = this.emailCtrl; return c ? c.invalid && c.touched : false; }
   get isPasswordInvalid() { const c = this.password;  return c ? c.invalid && c.touched : false; }
+
+  ngOnInit(): void {
+    google.accounts.id.initialize({
+      client_id: '433208848698-rpq6f7cudalbf3si6opvalqs86hpum5o.apps.googleusercontent.com',
+      callback: this.handleGoogleResponse.bind(this)
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById("google-btn"),
+      { theme: "outline", size: "large", text: "continue_with" }
+    );
+  }
+
+  handleGoogleResponse(response: any): void {
+    const googleToken = response.credential;
+    this.loading = true;
+    this.cdr.detectChanges();
+    
+    this.loginService.loginConGoogle(googleToken).subscribe({
+      next: (res: any) => {
+        this.loading = false;
+        if (res.status === '1') {
+          this.loginService.saveSession(
+            res.token,
+            res.usuario.email,
+            res.usuario.id,
+            res.usuario.nombre,
+            res.usuario.rol || 'socio'
+          );
+          this.router.navigate(['/home']);
+        } else {
+          this.errorMsg = res.msg || 'Error al iniciar sesión con Google';
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMsg = err.error?.msg || 'Error al conectar con Google.';
+        console.error("Error al loguearse con Google:", err);
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   onSubmit(): void {
     if (this.registerForm.invalid) return;
@@ -71,7 +115,7 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMsg = 'Error al conectar con el servidor. Intentá de nuevo.';
+        this.errorMsg = err.error?.msg || 'Error al conectar con el servidor. Intentá de nuevo.';
         console.error(err);
         this.cdr.detectChanges();
       }

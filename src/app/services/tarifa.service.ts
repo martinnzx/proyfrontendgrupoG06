@@ -24,6 +24,10 @@ export class TarifaService {
   public getTarifas(): Observable<any> {
     return this._http.get(this.hostBase, this.getAuthHeaders());
   }
+
+  public getMisTarifas(): Observable<any> {
+    return this._http.get(this.hostBase + 'mis-tarifas', this.getAuthHeaders());
+  }
   
   public getCuotasImpagasPorUsuario(usuarioId: number): Observable<any> {
     return this._http.get(this.hostBase + 'impagas/' + usuarioId, this.getAuthHeaders());

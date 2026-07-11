@@ -39,10 +39,10 @@ export class BuscadorEjerciciosComponent {
         this.videos = response;
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
         this.buscando = false;
         this.videos = [];
-        this.mensajeError = 'Error al buscar videos. Intentá nuevamente.';
+        this.mensajeError = (err.error && err.error.msg) || 'Error al buscar videos. Intentá nuevamente.';
         this.cdr.detectChanges();
       }
     });

@@ -9,6 +9,6 @@ export class Rutina {
     descripcion!: string;
     activo!: boolean;
     
-    ejercicio?: Ejercicio;
+    ejercicios?: Ejercicio[];
     usuario?: Usuario;
 }

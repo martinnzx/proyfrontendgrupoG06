@@ -57,8 +57,6 @@ export class EjerciciosListComponent implements OnInit {
     });
   }
 
-  // --- METODOS DEL MODAL ---
-
   abrirModalNuevo(): void {
     this.modoEdicion = false;
     this.ejercicioSeleccionadoId = null;
@@ -82,7 +80,6 @@ export class EjerciciosListComponent implements OnInit {
     const datos = this.ejercicioForm.value;
 
     if (this.modoEdicion && this.ejercicioSeleccionadoId) {
-      // EDITAR
       this.ejercicioService.editEjercicio(this.ejercicioSeleccionadoId, datos).subscribe({
         next: (response: any) => {
           if (response.status === '1') {
@@ -99,7 +96,6 @@ export class EjerciciosListComponent implements OnInit {
         }
       });
     } else {
-      // CREAR NUEVO
       this.ejercicioService.createEjercicio(datos).subscribe({
         next: (response: any) => {
           if (response.status === '1') {
@@ -117,8 +113,6 @@ export class EjerciciosListComponent implements OnInit {
       });
     }
   }
-
-  // --- METODOS DE ACCION RAPIDA ---
 
   cambiarEstado(ejercicio: Ejercicio): void {
     const datosActualizados = { ...ejercicio, activo: !ejercicio.activo };

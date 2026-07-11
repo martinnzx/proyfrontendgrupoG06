@@ -37,6 +37,10 @@ export class RutinaService {
     });
   }
 
+  public getMisRutinas(): Observable<any> {
+    return this._http.get(this.hostBase + 'mis-rutinas', this.getAuthHeaders());
+  }
+
   public createRutina(datos: any): Observable<any> {
     const body = JSON.stringify(datos);
     return this._http.post(this.hostBase, body, this.getAuthHeaders());
@@ -49,5 +53,15 @@ export class RutinaService {
 
   public deleteRutina(id: number): Observable<any> {
     return this._http.delete(this.hostBase + id, this.getAuthHeaders());
+  }
+
+  public setEjercicios(rutinaId: number, ejerciciosIds: number[]): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this._http.post(`${this.hostBase}setEjercicios`, { rutinaId, ejerciciosIds }, headers);
+  }
+
+  public generarRutinaIA(nombre: string, ejercicios: string[]): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this._http.post(`http://localhost:3000/api/ai/generar-rutina`, { nombre, ejercicios }, headers);
   }
 }

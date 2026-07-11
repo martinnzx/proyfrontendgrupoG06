@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './guards/admin.guard';
 import { entrenadorGuard } from './guards/entrenador.guard';
+import { socioGuard } from './guards/socio.guard';
 
 export const routes: Routes = [
   
@@ -36,12 +37,12 @@ export const routes: Routes = [
       import('./components/usuarios/usuarios-list/usuarios-list.component').then((m) => m.UsuariosListComponent),
   },
 
-  // Ruta ejercicios (protegida - solo entrenador)
+  // Ruta dashboard (protegida - solo admin)
   {
-    path: 'ejercicios',
-    canActivate: [entrenadorGuard],
+    path: 'dashboard',
+    canActivate: [adminGuard],
     loadComponent: () =>
-      import('./components/ejercicios-list/ejercicios-list.component').then((m) => m.EjerciciosListComponent),
+      import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
 
   // Ruta buscar ejercicio en YouTube (cualquier usuario logueado)
@@ -49,14 +50,6 @@ export const routes: Routes = [
     path: 'buscar-ejercicio',
     loadComponent: () =>
       import('./components/buscador-ejercicios/buscador-ejercicios.component').then((m) => m.BuscadorEjerciciosComponent),
-  },
-
-  // Ruta rutinas (protegida - solo entrenador)
-  {
-    path: 'rutinas',
-    canActivate: [entrenadorGuard],
-    loadComponent: () =>
-      import('./components/rutinas-list/rutinas-list.component').then((m) => m.RutinasListComponent),
   },
 
   // Ruta suscripciones (protegida - solo admin)
@@ -83,29 +76,52 @@ export const routes: Routes = [
       import('./components/pagos-list/pagos-list.component').then((m) => m.PagosListComponent),
   },
 
+  // Ruta ejercicios (protegida - solo entrenador)
+  {
+    path: 'ejercicios',
+    canActivate: [entrenadorGuard],
+    loadComponent: () =>
+      import('./components/ejercicios-list/ejercicios-list.component').then((m) => m.EjerciciosListComponent),
+  },
+
+  // Ruta rutinas (protegida - solo entrenador)
+  {
+    path: 'rutinas',
+    canActivate: [entrenadorGuard],
+    loadComponent: () =>
+      import('./components/rutinas-list/rutinas-list.component').then((m) => m.RutinasListComponent),
+  },
+
+  // Rutas del socio (protegidas)
+  {
+    path: 'mis-pagos',
+    canActivate: [socioGuard],
+    loadComponent: () =>
+      import('./components/mis-pagos/mis-pagos').then((m) => m.MisPagosComponent),
+  },
+  {
+    path: 'mis-rutinas',
+    canActivate: [socioGuard],
+    loadComponent: () =>
+      import('./components/mis-rutinas/mis-rutinas').then((m) => m.MisRutinasComponent),
+  },
+  
+  // Ruta pago exitoso mercado pago
+  {
+    path: 'pago-exitoso',
+    canActivate: [socioGuard],
+    loadComponent: () =>
+      import('./components/pago-exitoso-component/pago-exitoso-component.component').then((m) => m.PagoExitosoComponentComponent),
+  },
+ 
+  {
+    path: 'nutricion',
+    canActivate: [socioGuard],
+    loadComponent: () =>
+      import('./components/nutricion/nutricion.component').then((m) => m.NutricionComponent),
+  },
+
   // Ruta desconocida
   { path: '**', redirectTo: 'home' },
-
-  /* ----------------------------------------------------
-
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  {
-    path: 'login',
-    loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
-  },
-  {
-    path: 'register',
-    loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
-  },
-  {
-    path: 'usuarios',
-    loadComponent: () =>
-      import('./features/usuarios/usuario-list/usuario-list').then(
-        (m) => m.UsuarioListComponent
-      ),
-  },
-  { path: '**', redirectTo: 'login' },
-  
-  ---------------------------------------------------- */
 
 ];
