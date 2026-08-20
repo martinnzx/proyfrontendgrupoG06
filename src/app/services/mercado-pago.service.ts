@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,7 +9,7 @@ import { LoginService } from './login.service';
 })
 export class MercadoPagoService {
 
-  private hostBase = 'http://localhost:3000/api/mp/';
+  private hostBase = environment.apiUrl + '/mp/';
 
   constructor(private _http: HttpClient, private http: HttpClient, private loginService: LoginService) {}
 
@@ -22,7 +23,7 @@ export class MercadoPagoService {
   }
 
   getLinkPago(data: any): Observable<any> {
-    return this.http.post('http://localhost:3000/api/mp/payment', data, this.getAuthHeaders());
+    return this.http.post(environment.apiUrl + '/mp/payment', data, this.getAuthHeaders());
   }
 
 

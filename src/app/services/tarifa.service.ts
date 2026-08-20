@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,7 +9,7 @@ import { LoginService } from './login.service';
 })
 export class TarifaService {
 
-  private hostBase = 'http://localhost:3000/api/tarifas/';
+  private hostBase = environment.apiUrl + '/tarifas/';
 
   constructor(private _http: HttpClient, private loginService: LoginService) {}
 

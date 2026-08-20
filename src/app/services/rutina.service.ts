@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,7 +9,7 @@ import { LoginService } from './login.service';
 })
 export class RutinaService {
 
-  private hostBase = 'http://localhost:3000/api/rutinas/';
+  private hostBase = environment.apiUrl + '/rutinas/';
 
   constructor(private _http: HttpClient, private loginService: LoginService) {}
 
@@ -62,6 +63,6 @@ export class RutinaService {
 
   public generarRutinaIA(nombre: string, ejercicios: string[]): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this._http.post(`http://localhost:3000/api/ai/generar-rutina`, { nombre, ejercicios }, headers);
+    return this._http.post(`${environment.apiUrl}/ai/generar-rutina`, { nombre, ejercicios }, headers);
   }
 }
