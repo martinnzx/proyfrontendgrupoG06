@@ -41,11 +41,7 @@
           </li>
         }
 
-        @if (loginService.isLoggedIn()) {
-          <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/buscar-ejercicio']">Buscar Ejercicio</a>
-          </li>
-        }
+
 
         <!-- Botones del Socio -->
         @if (loginService.isLoggedIn() && loginService.getRol() === 'socio') {

@@ -45,11 +45,7 @@ export const routes: Routes = [
       import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
 
-  {
-    path: 'buscar-ejercicio',
-    loadComponent: () =>
-      import('./components/buscador-ejercicios/buscador-ejercicios.component').then((m) => m.BuscadorEjerciciosComponent),
-  },
+
 
   // Ruta suscripciones (protegida - solo admin)
   {
