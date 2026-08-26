@@ -90,8 +90,9 @@ export class MisPagosComponent implements OnInit {
 
     this.mpService.getLinkPago(payload).subscribe({
       next: (res) => {
-        console.log('Respuesta del backend:', res);
-        window.location.href = res.init_point;
+        if (res.init_point) {
+          window.location.href = res.init_point;
+        }
         this.cdr.detectChanges();
       },
       error: (err) => {

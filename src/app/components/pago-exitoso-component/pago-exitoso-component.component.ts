@@ -63,7 +63,6 @@ export class PagoExitosoComponentComponent implements OnInit {
           this.pagoService.createPago(data).subscribe(
             
             (result: any) => {
-              console.log('Pago registrado exitosamente:', result);
               this.message = '¡Tu pago ha sido registrado correctamente!';
               this.loading = false;
               this.cd.detectChanges();
